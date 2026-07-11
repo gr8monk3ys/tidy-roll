@@ -1,6 +1,7 @@
 name: security-baseline
 
 on:
+  pull_request:
   workflow_dispatch:
   schedule:
     - cron: "23 7 3 * *"  # monthly (minute-safe policy)
