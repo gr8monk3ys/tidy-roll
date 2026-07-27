@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Tidy Roll logo">
+  <defs>
+    <linearGradient id="tr-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF7A59"/>
+      <stop offset="1" stop-color="#FF3D81"/>
+    </linearGradient>
+    <linearGradient id="tr-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFE9DA"/>
+      <stop offset="1" stop-color="#FFD2E2"/>
+    </linearGradient>
+    <linearGradient id="tr-heart" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF7A59"/>
+      <stop offset="1" stop-color="#FF3D81"/>
+    </linearGradient>
+    <clipPath id="tr-photo">
+      <rect x="340" y="298" width="344" height="348" rx="24"/>
+    </clipPath>
+  </defs>
+
+  <rect width="1024" height="1024" rx="224" fill="url(#tr-bg)"/>
+
+  <!-- ghost card: the one that was just tossed -->
+  <g transform="rotate(-16 452 560)" opacity="0.28">
+    <rect x="252" y="290" width="400" height="500" rx="44" fill="#FFFFFF"/>
+  </g>
+
+  <!-- motion trail: the card's swing, sweeping up from the lower left -->
+  <g fill="none" stroke="#FFFFFF" stroke-linecap="round">
+    <path d="M 347 806 A 330 330 0 0 1 193 605" stroke-width="30" opacity="0.7"/>
+    <path d="M 283 848 A 400 400 0 0 1 150 689" stroke-width="26" opacity="0.38"/>
+  </g>
+
+  <!-- kept polaroid -->
+  <g transform="rotate(8 512 520)">
+    <rect x="312" y="270" width="400" height="500" rx="44" fill="#FFFFFF"/>
+    <g clip-path="url(#tr-photo)">
+      <rect x="340" y="298" width="344" height="348" fill="url(#tr-sky)"/>
+      <circle cx="596" cy="392" r="44" fill="#FF7A59"/>
+      <path d="M 320 646 L 452 480 L 530 574 L 500 646 Z" fill="#FF3D81" opacity="0.55"/>
+      <path d="M 420 646 L 556 500 L 704 646 Z" fill="#FF5A6E"/>
+    </g>
+    <path d="M 512 672 C 500 656 478 656 468 670 C 458 684 464 700 512 730 C 560 700 566 684 556 670 C 546 656 524 656 512 672 Z" fill="url(#tr-heart)"/>
+  </g>
+</svg>

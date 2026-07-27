@@ -13,6 +13,8 @@
 
 **A Tinder-swipe UI/UX for cleaning up your photos.**
 
+🌐 **[tidyroll-legal.vercel.app](https://tidyroll-legal.vercel.app)** — try the live swipe demo right on the site.
+
 Tidy Roll deals your photos out one card at a time: swipe **right to keep**,
 **left to toss**, and watch the megabytes you'll reclaim tick up. When you're
 done you get a summary of everything you tossed — nothing is touched until
@@ -124,9 +126,11 @@ extension/            the unpacked extension (this is what ships)
     files.js          File System Access layer; all disk writes live here
     demo.js           bundled demo roll
 mobile/               Android/iOS app (Expo / React Native, self-contained)
+site/                 showcase site (Next.js 15 + Tailwind 4 + Framer Motion)
 assets/               brand source (logo.svg) + generated art
 scripts/              asset/screenshot/packaging tooling
 tests/                node:test suites
+docs/                 store listing kit + marketing playbook
 ```
 
 Design tokens: gradient `#FF7A59 → #FF3D81` on ink `#0F1220`, keep

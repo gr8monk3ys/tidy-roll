@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0f1220;
+  --color-surface: #181d31;
+  --color-surface-2: #212743;
+  --color-line: #2c3352;
+  --color-fg: #f4f5fb;
+  --color-muted: #9aa1bc;
+  --color-keep: #34d399;
+  --color-toss: #ff4d67;
+  --color-grad-a: #ff7a59;
+  --color-grad-b: #ff3d81;
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-ink);
+  color: var(--color-fg);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-grad-a), var(--color-grad-b));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-gradient-brand {
+  background: linear-gradient(135deg, var(--color-grad-a), var(--color-grad-b));
+}
+
+.bg-glow {
+  background:
+    radial-gradient(760px 560px at 10% -10%, rgba(255, 122, 89, 0.16), transparent 65%),
+    radial-gradient(820px 640px at 105% 30%, rgba(255, 61, 129, 0.13), transparent 65%),
+    radial-gradient(700px 520px at -5% 105%, rgba(255, 61, 129, 0.1), transparent 65%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

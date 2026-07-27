@@ -147,6 +147,7 @@ async function main() {
   await page.waitForTimeout(600);
   await page.screenshot({ path: path.join(ROOT, 'assets', 'promo', 'marquee-1400x560.png') });
   console.log('promo tiles written');
+  // (The site's social/OG card is generated in code by site/app/opengraph-image.tsx.)
 
   await browser.close();
 }
