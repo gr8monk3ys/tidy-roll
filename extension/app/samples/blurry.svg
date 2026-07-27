@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFB88A"/><stop offset=".55" stop-color="#FF8E7E"/><stop offset="1" stop-color="#E85A8A"/>
+    </linearGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="22"/></filter>
+  </defs>
+  <rect width="800" height="1000" fill="url(#sky)"/>
+  <g filter="url(#blur)" transform="rotate(-4 400 500)">
+    <circle cx="420" cy="540" r="110" fill="#FFE3B3"/>
+    <path d="M-40 730 L210 470 L390 680 L520 560 L840 810 V1050 H-40 Z" fill="#8A3D68"/>
+    <path d="M-40 850 L260 640 L470 830 L640 700 L840 870 V1050 H-40 Z" fill="#5E2A54"/>
+  </g>
+</svg>

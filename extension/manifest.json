@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Tidy Roll: Swipe to Clean Your Photos",
+  "short_name": "Tidy Roll",
+  "version": "1.0.0",
+  "description": "Swipe right to keep, left to toss. Clean up any photo folder in minutes - fast, fun, and 100% on your device.",
+  "minimum_chrome_version": "110",
+  "homepage_url": "https://github.com/gr8monk3ys/tidy-roll",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "Tidy Roll",
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "permissions": ["storage"]
+}

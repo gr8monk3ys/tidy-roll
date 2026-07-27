@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Tidy Roll</title>
+  <link rel="icon" href="../icons/icon32.png">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="../icons/icon48.png" alt="">
+      <span>Tidy Roll</span>
+    </div>
+    <button id="btn-settings" class="icon-btn" aria-label="Settings" title="Settings">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h10M18 18h2"/>
+        <circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="18" r="2"/>
+      </svg>
+    </button>
+  </header>
+
+  <main>
+    <!-- Home -->
+    <section id="screen-home" class="screen active">
+      <div class="hero-mark"><img src="../icons/icon128.png" alt="Tidy Roll logo"></div>
+      <h1>Swipe your camera roll <span class="accent">clean</span>.</h1>
+      <p class="lede">Pick a folder of photos. Swipe right to keep, left to toss. Everything stays on your device.</p>
+      <div class="cta-row">
+        <button id="btn-pick" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          Choose a folder
+        </button>
+        <button id="btn-demo" class="btn btn-ghost">Try the demo roll</button>
+      </div>
+      <div id="recent" class="recent hidden">
+        <h2>Recent folders</h2>
+        <ul id="recent-list"></ul>
+      </div>
+      <ul class="trust">
+        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>100% on-device, zero upload</li>
+        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Tossed files go to a safety folder</li>
+        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Keyboard-first &amp; fast</li>
+      </ul>
+      <p id="note-home" class="note hidden"></p>
+    </section>
+
+    <!-- Scanning -->
+    <section id="screen-scanning" class="screen">
+      <div class="spinner" role="status" aria-label="Scanning"></div>
+      <h1>Scanning…</h1>
+      <p class="lede"><b id="scan-count">0</b> photos found so far</p>
+    </section>
+
+    <!-- Deck -->
+    <section id="screen-deck" class="screen">
+      <div class="deck-hud">
+        <div class="progress"><i id="progress-fill"></i></div>
+        <div class="hud-row">
+          <span id="hud-folder" class="chip" title="">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            <span id="hud-folder-name"></span>
+          </span>
+          <span id="hud-count">0 of 0</span>
+          <span id="hud-reclaim" class="chip chip-toss hidden">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+            <span id="hud-reclaim-text"></span>
+          </span>
+        </div>
+      </div>
+
+      <div id="deck" class="deck" aria-live="polite"></div>
+
+      <div class="deck-actions">
+        <button id="btn-toss" class="round-btn toss" aria-label="Toss (left arrow)" title="Toss — ←">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+        <button id="btn-undo" class="round-btn small" aria-label="Undo (Z)" title="Undo — Z">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg>
+        </button>
+        <button id="btn-skip" class="round-btn small" aria-label="Skip for now (down arrow)" title="Skip — ↓">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 17l5-5-5-5"/><path d="M13 17l5-5-5-5"/></svg>
+        </button>
+        <button id="btn-keep" class="round-btn keep" aria-label="Keep (right arrow)" title="Keep — →">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 21s-8.1-5.6-8.1-11.1a4.6 4.6 0 0 1 8.1-2.9 4.6 4.6 0 0 1 8.1 2.9C20.1 15.4 12 21 12 21z"/></svg>
+        </button>
+      </div>
+
+      <p class="kbd-hint"><kbd>←</kbd> toss <kbd>→</kbd> keep <kbd>↓</kbd> skip <kbd>Z</kbd> undo</p>
+      <button id="btn-finish" class="btn-link">Finish early — review tossed so far</button>
+    </section>
+
+    <!-- Summary -->
+    <section id="screen-summary" class="screen">
+      <h1 id="summary-title"></h1>
+      <p id="summary-sub" class="summary-sub"></p>
+      <div id="summary-grid" class="summary-grid"></div>
+      <div class="summary-actions">
+        <button id="btn-confirm" class="btn btn-primary"></button>
+        <button id="btn-cancel" class="btn btn-ghost">Keep everything</button>
+      </div>
+      <p id="danger-note" class="danger-note hidden">Permanent delete is on — this cannot be undone.</p>
+      <div id="exec" class="exec hidden">
+        <div class="progress"><i id="exec-fill"></i></div>
+        <p id="exec-text">Working…</p>
+      </div>
+    </section>
+
+    <!-- Done -->
+    <section id="screen-done" class="screen">
+      <div class="done-mark">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <h1 id="done-title">Nice tidying!</h1>
+      <div class="done-stats">
+        <div class="stat"><b id="done-reviewed">0</b><span>reviewed</span></div>
+        <div class="stat"><b id="done-tossed">0</b><span>tossed</span></div>
+        <div class="stat reclaimed"><b id="done-bytes">0 B</b><span>reclaimed</span></div>
+      </div>
+      <p id="done-note" class="note"></p>
+      <button id="btn-again" class="btn btn-primary">Tidy another folder</button>
+    </section>
+  </main>
+
+  <!-- Settings -->
+  <dialog id="settings-modal">
+    <h2>Settings</h2>
+    <form method="dialog">
+      <fieldset>
+        <legend>Tossed files</legend>
+        <label class="opt">
+          <input type="radio" name="mode" value="trash" checked>
+          <span>Move to a <b>“Tidy Roll - Tossed”</b> folder
+            <small>Safest — nothing is deleted until you empty it yourself.</small></span>
+        </label>
+        <label class="opt">
+          <input type="radio" name="mode" value="delete">
+          <span>Delete permanently
+            <small>Files are removed for good when you confirm the summary.</small></span>
+        </label>
+      </fieldset>
+      <fieldset>
+        <legend>Order</legend>
+        <select id="set-sort" aria-label="Review order">
+          <option value="oldest">Oldest first</option>
+          <option value="newest">Newest first</option>
+          <option value="largest">Largest first</option>
+          <option value="shuffle">Shuffle</option>
+        </select>
+      </fieldset>
+      <fieldset>
+        <legend>Scanning</legend>
+        <label class="opt">
+          <input type="checkbox" id="set-recursive">
+          <span>Include subfolders</span>
+        </label>
+        <label class="opt">
+          <input type="checkbox" id="set-videos" checked>
+          <span>Include videos</span>
+        </label>
+      </fieldset>
+      <div class="dialog-actions">
+        <button value="cancel" class="btn btn-ghost" formnovalidate>Cancel</button>
+        <button id="btn-save-settings" value="save" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
