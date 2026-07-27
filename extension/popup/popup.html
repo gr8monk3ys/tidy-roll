@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="color-scheme" content="dark">
+  <title>Tidy Roll</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="hero">
+    <img class="mark" src="../icons/icon128.png" alt="" width="56" height="56">
+    <h1>Tidy Roll</h1>
+    <p>Swipe your camera roll clean.</p>
+  </header>
+
+  <section class="stats" aria-label="Lifetime stats">
+    <div class="stat"><b id="stat-reviewed">0</b><span>reviewed</span></div>
+    <div class="stat"><b id="stat-tossed">0</b><span>tossed</span></div>
+    <div class="stat"><b id="stat-bytes">0 B</b><span>reclaimed</span></div>
+  </section>
+
+  <button id="btn-start" class="cta">Start tidying</button>
+
+  <footer>
+    <span id="version"></span>
+    <nav>
+      <a href="https://github.com/gr8monk3ys/tidy-roll" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="https://github.com/gr8monk3ys/tidy-roll/blob/main/PRIVACY.md" target="_blank" rel="noreferrer">Privacy</a>
+    </nav>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
