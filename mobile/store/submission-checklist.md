@@ -1,55 +1,74 @@
-# Store Submission Checklist (TidyRoll)
+# Store Submission Checklist (Tidy Roll)
 
-This repo gets you to a production-ready codebase, but App Store / Play rollout still requires the store-side setup.
+The codebase is production-ready; this covers the store-side setup that has to
+happen in Apple's and Google's consoles.
 
 ## Accounts
 
-- Apple Developer Program (App Store Connect access)
-- Google Play Console account
+- **Google Play Console** — $25, one time.
+- **Apple Developer Program** — $99, billed annually. Apps are removed if the
+  membership lapses. See `docs/MARKETING.md` for how this is funded.
 
-## Build + Testing
+> Launching Android first is the cheapest path: one $25 fee, no recurring cost.
 
-- Create an EAS production build:
-  - `eas build --profile production --platform ios`
-  - `eas build --profile production --platform android`
-- Test on real devices:
-  - iOS via TestFlight
-  - Android via Internal testing track
+## Contact details you must supply
 
-## Submit
-
-- iOS: `eas submit --platform ios --profile production`
-- Android: `eas submit --platform android --profile production`
+- [ ] **Support email for App Store Connect.** Apple requires a working contact
+      address on the app record. This is entered in the console, not in the
+      repo. The published pages point users at GitHub Issues instead of an
+      email, so no dead address ships in the app.
+- [ ] Verify the support/privacy/terms URLs below resolve before submitting.
 
 ## Required URLs
 
-- Support URL (HTTPS)
-- Privacy policy URL (HTTPS)
+- Support: https://tidyroll-legal.vercel.app/support
+- Privacy: https://tidyroll-legal.vercel.app/privacy
+- Terms: https://tidyroll-legal.vercel.app/terms
 
-This repo includes a simple static support/privacy/terms site in `static-site/` that you can deploy.
-Current deployment:
-- Support: https://tidyroll-legal.vercel.app
-- Privacy: https://tidyroll-legal.vercel.app/privacy.html
-- Terms: https://tidyroll-legal.vercel.app/terms.html
+## Build + test
+
+```bash
+eas build --profile production --platform android
+eas build --profile production --platform ios
+```
+
+Test on real devices — iOS via TestFlight, Android via the Internal testing
+track — then submit:
+
+```bash
+eas submit --platform android --profile production
+eas submit --platform ios --profile production
+```
 
 ## App Store Connect (iOS)
 
-- App name: `TidyRoll`
-- Bundle ID: `com.tidyroll.app` (`/Users/natalyscaturchio/code/tidy-roll/app.json:18`)
-- Version: `1.0.0` (`/Users/natalyscaturchio/code/tidy-roll/app.json:5`)
-- Build number: `1` (`/Users/natalyscaturchio/code/tidy-roll/app.json:19`)
-- Privacy labels: see `store/store-privacy-answers.md`
-- Upload screenshots (iPhone required; iPad optional)
+- App name: `Tidy Roll`
+- Bundle ID: `com.tidyroll.app` (`mobile/app.json` → `expo.ios.bundleIdentifier`)
+- Version: `1.0.0` (`mobile/app.json` → `expo.version`)
+- Build number: `1` (`mobile/app.json` → `expo.ios.buildNumber`)
+- Privacy labels: see `store-privacy-answers.md`
+- Screenshots: iPhone required, iPad optional
 
 ## Google Play Console (Android)
 
-- Package name: `com.tidyroll.app` (`/Users/natalyscaturchio/code/tidy-roll/app.json:22`)
-- Version: `1.0.0` (`/Users/natalyscaturchio/code/tidy-roll/app.json:5`)
-- Version code: `1` (`/Users/natalyscaturchio/code/tidy-roll/app.json:23`)
-- Data safety: see `store/store-privacy-answers.md`
-- Upload screenshots + feature graphic
+- Package name: `com.tidyroll.app` (`mobile/app.json` → `expo.android.package`)
+- Version: `1.0.0` (`mobile/app.json` → `expo.version`)
+- Version code: `1` (`mobile/app.json` → `expo.android.versionCode`)
+- Data safety: see `store-privacy-answers.md`
+- Screenshots plus a feature graphic
+
+> Google is rolling out mandatory developer identity verification — required in
+> Brazil, Indonesia, Singapore and Thailand from 30 September 2026, and
+> globally during 2027. Budget time for the identity check.
 
 ## Metadata
 
-- App Store copy: `store/app-store-metadata.md`
-- Google Play copy: `store/google-play-metadata.md`
+- App Store copy: `app-store-metadata.md`
+- Google Play copy: `google-play-metadata.md`
+
+## Naming note
+
+There is an existing App Store app called **TinyRoll** with a similar name and
+overlapping feature set. The names differ ("tidy" vs "tiny") and "tidy"
+describes the function, but if Apple raises a similarity objection under the
+copycat guidelines, be ready to respond or to adjust the store display name.

@@ -12,9 +12,10 @@ export default function Footer() {
       </div>
       <nav className="flex flex-wrap justify-center gap-5 text-[13.5px] text-muted">
         <a href={GITHUB} target="_blank" rel="noreferrer" className="transition hover:text-fg">GitHub</a>
-        <a href={`${GITHUB}/blob/main/PRIVACY.md`} target="_blank" rel="noreferrer" className="transition hover:text-fg">Privacy</a>
+        <a href="/privacy" className="transition hover:text-fg">Privacy</a>
+        <a href="/terms" className="transition hover:text-fg">Terms</a>
+        <a href="/support" className="transition hover:text-fg">Support</a>
         <a href={`${GITHUB}/blob/main/CHANGELOG.md`} target="_blank" rel="noreferrer" className="transition hover:text-fg">Changelog</a>
-        <a href={`${GITHUB}/issues`} target="_blank" rel="noreferrer" className="transition hover:text-fg">Support</a>
       </nav>
       <p className="text-center text-[12.5px] text-muted">
         © 2026 gr8monk3ys · GPL-3.0 · Made with a suspicious number of sunset photos

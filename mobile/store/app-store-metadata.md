@@ -32,7 +32,7 @@ Privacy-first:
 - No tracking
 
 ## Support URL
-https://tidyroll-legal.vercel.app
+https://tidyroll-legal.vercel.app/support
 
 ## Privacy Policy URL
-https://tidyroll-legal.vercel.app/privacy.html
+https://tidyroll-legal.vercel.app/privacy
