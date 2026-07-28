@@ -44,7 +44,7 @@ export default function Home() {
         <section className="mx-auto grid max-w-[1120px] items-center gap-12 px-6 pb-20 pt-10 md:grid-cols-[1.1fr_0.9fr]">
           <div className="flex flex-col items-center text-center md:items-start md:text-left">
             <p className="mb-3.5 text-[13px] font-bold uppercase tracking-[0.14em] text-grad-a">
-              Free · Open source · No account
+              Free · No ads · Open source
             </p>
             <h1 className="mb-4 text-[clamp(38px,5.4vw,60px)] font-extrabold leading-[1.05] tracking-tight">
               Swipe your camera roll <span className="text-gradient">clean</span>.
@@ -74,7 +74,7 @@ export default function Home() {
             <ul className="mt-6 flex flex-wrap justify-center gap-4 text-[13.5px] text-muted">
               <li>🔒 100% on-device</li>
               <li>🗂 Nothing deleted without confirmation</li>
-              <li>⌨️ Keyboard-first</li>
+              <li>📱 Android &amp; iOS</li>
             </ul>
           </div>
           <DemoDeck />
