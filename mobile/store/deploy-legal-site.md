@@ -1,27 +1,31 @@
-# Deploy Support + Privacy Policy Site
+# Support, Privacy & Terms pages
 
-This repo includes a minimal static site in `static-site/` for:
-- Support URL (index)
-- Privacy policy
-- Terms
+The store-required pages are part of the showcase site in `site/` (Next.js),
+not a separate static bundle. They share the site's design system, so they
+stay on-brand automatically.
 
-## Deploy to Vercel (fastest)
+| Page | Source | URL |
+| --- | --- | --- |
+| Support | `site/app/support/page.tsx` | https://tidyroll-legal.vercel.app/support |
+| Privacy policy | `site/app/privacy/page.tsx` | https://tidyroll-legal.vercel.app/privacy |
+| Terms | `site/app/terms/page.tsx` | https://tidyroll-legal.vercel.app/terms |
 
-1. Install/login (one-time):
-   - `npx vercel login`
-2. Deploy:
-   - `npx vercel deploy --prod ./static-site`
+The older `/privacy.html` and `/terms.html` URLs permanently redirect to the
+new ones (see `redirects()` in `site/next.config.ts`), so anything already
+submitted with those addresses keeps working.
 
-Vercel will print URLs. Use:
-- Support URL: `<your-url>/`
-- Privacy policy URL: `<your-url>/privacy.html`
-- Terms URL: `<your-url>/terms.html`
+## Deploying
 
-Current deployment:
-- Support: https://tidyroll-legal.vercel.app
-- Privacy: https://tidyroll-legal.vercel.app/privacy.html
-- Terms: https://tidyroll-legal.vercel.app/terms.html
+```bash
+cd site
+npm ci
+npm run build
+npx vercel deploy --prod        # or push to main if the repo is Vercel-linked
+```
 
-## Deploy to Cloudflare Pages (alternative)
+## If you move to a custom domain
 
-Create a Pages project with `static-site/` as the output directory and no build command.
+1. Add the domain in the Vercel project.
+2. Update `SITE_URL` in `site/app/layout.tsx` (drives canonical + OpenGraph URLs).
+3. Update the URLs in this file, `app-store-metadata.md`,
+   `google-play-metadata.md`, and `submission-checklist.md`.

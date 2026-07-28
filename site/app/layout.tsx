@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const SITE_URL = 'https://tidyroll-legal.vercel.app';
 const TITLE = 'Tidy Roll — Swipe your camera roll clean';
 const DESCRIPTION =
-  'A Tinder-style swipe deck for cleaning up your photos. Right to keep, left to toss — fast, fun, and 100% on your device. Browser extension + Android/iOS app.';
+  'A Tinder-style swipe deck for cleaning up your photos. Right to keep, left to toss — fast, fun, and 100% on your device. Free Android and iOS app, no ads, no tracking.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

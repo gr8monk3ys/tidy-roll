@@ -82,6 +82,46 @@ your data — and how to avoid them"), a launch listing on AlternativeTo
 (alternative to: Slidebox, Swipewipe, Gemini Photos), and awesome-lists for
 browser extensions.
 
+## Money
+
+Tidy Roll is free and stays free. The only real cost is store distribution:
+
+| | Fee | Cadence |
+| --- | --- | --- |
+| Google Play developer registration | $25 | **one time** |
+| Apple Developer Program | $99 | **every year** — apps are pulled if it lapses |
+
+### No ads. This is a deliberate decision, not an oversight.
+
+Advertising SDKs are tracking SDKs. Adding one would mean rewriting the privacy
+policy, flipping the App Store privacy labels and Play Data Safety disclosure to
+"data collected", and abandoning the single sharpest thing we can say about the
+product. It would also put us *behind* the nearest competitor, TinyRoll, which
+already advertises "no ads, no tracking". And in a photo app, an ad interrupting
+someone looking at their own memories is uniquely unpleasant.
+
+The economics don't rescue it either: a niche utility with a few thousand
+installs earns single-digit dollars a month from ads — not reliably $99 — so it
+would cost the positioning and not even cover the bill.
+
+### How the fees get funded instead, cheapest first
+
+1. **Ship Android first.** $25 once, no recurring cost, free forever. Proves
+   demand before Apple's meter starts.
+2. **Donations.** GitHub Sponsors (see `.github/FUNDING.yml`) linked from the
+   site footer and the app's About screen. Zero privacy cost, keeps "completely
+   free" literally true, and a handful of supporters covers the annual fee.
+3. **An optional one-time Pro unlock (~$2.99),** only if real revenue is wanted.
+   In-app purchase is handled by Apple/Google, so there is still no ad SDK and
+   no tracking of our own. Under the small-business programme the platform cut
+   is 15%, so roughly 40 sales a year covers Apple. Candidate Pro features that
+   don't cripple the free app: duplicate/burst detection, custom sort orders,
+   themes, unlimited undo history, exportable session stats.
+
+**Never:** paid-upfront (kills discovery for a utility people find by searching
+"storage full"), subscriptions (indefensible for a local tool), or paywalling
+deletion itself.
+
 ## Keywords
 
 **SEO/site:** photo cleanup, delete duplicate photos, clean camera roll,

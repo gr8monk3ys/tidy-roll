@@ -8,7 +8,7 @@ const GITHUB = 'https://github.com/gr8monk3ys/tidy-roll';
 const STEPS = [
   {
     title: 'Point it at your photos',
-    body: 'Pick any folder in your browser, or open your camera roll in the mobile app. Tidy Roll never uploads a single byte.',
+    body: 'Open your camera roll on Android or iOS — or pick any folder on your computer. Tidy Roll never uploads a single byte.',
   },
   {
     title: 'Swipe',
@@ -21,12 +21,12 @@ const STEPS = [
 ];
 
 const FEATURES = [
-  { icon: '🗂', title: 'Safety folder by default', body: 'Tossed files move to a Tidy Roll - Tossed folder inside the folder you tidied. Deleting forever is opt-in, and it asks twice.' },
-  { icon: '🔒', title: 'Radically private', body: 'No account, no server, no analytics, no network calls. The extension asks for one permission: local storage for your settings.' },
-  { icon: '⌨️', title: 'Keyboard-first speed', body: 'Arrow keys drive everything. Hundreds of photos reviewed in minutes — it feels like a game, because it basically is one.' },
-  { icon: '📊', title: 'Space you can see', body: 'A live “to toss” counter during the session, and lifetime stats — photos reviewed, tossed, megabytes reclaimed.' },
-  { icon: '🎞', title: 'Videos too', body: 'mp4 and webm play right on the card. Sort by oldest, newest, largest — or shuffle for roulette mode.' },
-  { icon: '🌐', title: 'Open source', body: 'GPL-3.0, no tracking to hide, readable in an afternoon. Audit the exact code that touches your photos.' },
+  { icon: '🧾', title: 'Nothing deleted by surprise', body: 'Every toss is staged. You review them all on one screen and rescue any of them with a tap before a single photo leaves your library.' },
+  { icon: '🔒', title: 'Radically private', body: 'No account, no server, no analytics, no ads, no network calls. Your photos are read by the app and nothing else.' },
+  { icon: '🗓', title: 'On This Day', body: 'Revisit what you shot on this date in past years, build a streak, and clear out the near-duplicates you never picked between.' },
+  { icon: '📊', title: 'Space you can see', body: 'A live “to toss” counter during the session, plus lifetime stats — photos reviewed, tossed, megabytes reclaimed.' },
+  { icon: '📚', title: 'Albums and bookmarks', body: 'Clean a single album, choosing whether left means remove-from-album or delete. Bookmark the hard calls for later.' },
+  { icon: '🌐', title: 'Free and open source', body: 'No ads, no subscription, no paywall. GPL-3.0, so you can audit the exact code that touches your photos.' },
 ];
 
 const SHOTS = [
@@ -44,7 +44,7 @@ export default function Home() {
         <section className="mx-auto grid max-w-[1120px] items-center gap-12 px-6 pb-20 pt-10 md:grid-cols-[1.1fr_0.9fr]">
           <div className="flex flex-col items-center text-center md:items-start md:text-left">
             <p className="mb-3.5 text-[13px] font-bold uppercase tracking-[0.14em] text-grad-a">
-              Free · Open source · No account
+              Free · No ads · Open source
             </p>
             <h1 className="mb-4 text-[clamp(38px,5.4vw,60px)] font-extrabold leading-[1.05] tracking-tight">
               Swipe your camera roll <span className="text-gradient">clean</span>.
@@ -74,7 +74,7 @@ export default function Home() {
             <ul className="mt-6 flex flex-wrap justify-center gap-4 text-[13.5px] text-muted">
               <li>🔒 100% on-device</li>
               <li>🗂 Nothing deleted without confirmation</li>
-              <li>⌨️ Keyboard-first</li>
+              <li>📱 Android &amp; iOS</li>
             </ul>
           </div>
           <DemoDeck />
@@ -145,16 +145,15 @@ export default function Home() {
             Your photos never leave your device. Period.
           </h2>
           <p className="mx-auto mb-7 max-w-[68ch] text-[16.5px] leading-[1.7] text-muted">
-            Tidy Roll has no backend to send them to. The browser extension reads
-            photos straight from disk through your browser&apos;s own folder picker;
-            the mobile app uses the system photo library. There is no telemetry, no
-            crash reporting, no ads, and no third-party SDKs — and because it&apos;s
-            open source, you don&apos;t have to take our word for it.
+            Tidy Roll has no backend to send them to. The mobile app reads your
+            library through the operating system&apos;s own photo APIs; the optional
+            desktop extension reads from a folder you pick through the browser&apos;s
+            own picker. There is no telemetry, no crash reporting, no ads, and no
+            third-party SDKs — and because it&apos;s open source, you don&apos;t have
+            to take our word for it.
           </p>
           <a
-            href={`${GITHUB}/blob/main/PRIVACY.md`}
-            target="_blank"
-            rel="noreferrer"
+            href="/privacy"
             className="inline-block rounded-full border border-line px-7 py-3.5 font-bold transition hover:border-muted"
           >
             Read the privacy policy
@@ -167,27 +166,14 @@ export default function Home() {
             Get Tidy Roll
           </h2>
           <div className="mx-auto grid max-w-[860px] gap-5 md:grid-cols-2">
-            <article className="flex flex-col items-start gap-3 rounded-[20px] border border-line bg-surface/65 p-7">
-              <h3 className="text-xl font-bold">🖥 Desktop browser</h3>
-              <p className="text-[14.5px] leading-relaxed text-muted">
-                Chrome, Edge, Brave, Arc, Opera — tidy any folder on your computer.
-              </p>
-              <a
-                href={`${GITHUB}#-install`}
-                target="_blank"
-                rel="noreferrer"
-                className="bg-gradient-brand rounded-full px-6 py-3 font-bold text-white shadow-[0_10px_30px_rgba(255,90,110,0.35)] transition hover:shadow-[0_14px_40px_rgba(255,90,110,0.5)]"
-              >
-                Install the extension
-              </a>
-              <span className="text-xs text-muted">
-                Chrome Web Store listing coming soon — load-unpacked today
+            <article className="flex flex-col items-start gap-3 rounded-[20px] border border-grad-b/40 bg-surface/65 p-7 shadow-[0_14px_44px_rgba(255,61,129,0.14)]">
+              <span className="bg-gradient-brand rounded-full px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white">
+                Main app
               </span>
-            </article>
-            <article className="flex flex-col items-start gap-3 rounded-[20px] border border-line bg-surface/65 p-7">
               <h3 className="text-xl font-bold">📱 Android &amp; iOS</h3>
               <p className="text-[14.5px] leading-relaxed text-muted">
-                The native app tidies your actual camera roll — freed space is real space.
+                Tidies your actual camera roll — On This Day, albums, bookmarks, and
+                staged deletes, so the space you free up is space you get back.
               </p>
               <a
                 href={`${GITHUB}/tree/main/mobile`}
@@ -198,7 +184,28 @@ export default function Home() {
                 Get the mobile app
               </a>
               <span className="text-xs text-muted">
-                Store releases coming soon — build with Expo today
+                Store releases coming soon — build it with Expo today
+              </span>
+            </article>
+            <article className="flex flex-col items-start gap-3 rounded-[20px] border border-line bg-surface/65 p-7">
+              <span className="rounded-full border border-line px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-muted">
+                Bonus
+              </span>
+              <h3 className="text-xl font-bold">🖥 Desktop browser</h3>
+              <p className="text-[14.5px] leading-relaxed text-muted">
+                Chrome, Edge, Brave, Arc, Opera — point it at a Downloads or
+                Screenshots folder and swipe with the arrow keys.
+              </p>
+              <a
+                href={`${GITHUB}#-browser-extension-optional`}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full border border-line px-6 py-3 font-bold transition hover:border-muted"
+              >
+                Install the extension
+              </a>
+              <span className="text-xs text-muted">
+                Load-unpacked today — Chrome Web Store listing coming soon
               </span>
             </article>
           </div>

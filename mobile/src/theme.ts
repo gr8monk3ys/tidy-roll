@@ -1,17 +1,44 @@
+/**
+ * Tidy Roll — mobile design tokens.
+ *
+ * Mirrors the shared brand identity used by the site and the browser
+ * extension: the "sunset swipe" gradient (#FF7A59 → #FF3D81) on deep ink,
+ * with green for keep and red for toss. Screens should reference these
+ * tokens instead of hardcoding colors so the palette stays in one place.
+ */
+
 export const theme = {
   colors: {
-    bg: '#0B0B10',
-    card: '#141421',
-    card2: '#10101A',
-    text: '#F6F6FF',
-    textDim: 'rgba(246,246,255,0.72)',
+    // Surfaces, darkest first.
+    bg: '#0F1220',
+    card2: '#181D31',
+    card: '#212743',
+
+    text: '#F4F5FB',
+    textDim: 'rgba(244,245,251,0.72)',
     stroke: 'rgba(255,255,255,0.10)',
-    green: '#37D67A',
-    red: '#FF4D4D',
+
+    green: '#34D399', // keep
+    red: '#FF4D67', // toss
     yellow: '#FFD166',
-    blue: '#4D9BFF',
-    purple: '#B28DFF',
+
+    brand: '#FF7A59',
+    brandAlt: '#FF3D81',
   },
+
+  /**
+   * Mode-card gradients. One sunset ramp — gold → coral → pink → violet —
+   * so the cards read as a single family while staying distinguishable.
+   * "On This Day" carries the signature brand gradient.
+   */
+  gradients: {
+    brand: ['#FF7A59', '#FF3D81'],
+    onThisDay: ['#FF7A59', '#FF3D81'],
+    recents: ['#FFC46B', '#FF7A59'],
+    random: ['#FF3D81', '#9D4EDD'],
+    albums: ['#8B5CF6', '#6366F1'],
+  },
+
   radius: {
     lg: 24,
     md: 16,
@@ -25,4 +52,3 @@ export const theme = {
     xl: 32,
   },
 } as const;
-

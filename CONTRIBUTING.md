@@ -54,4 +54,18 @@ store-submission notes.
 
 Palette: gradient `#FF7A59 → #FF3D81` on ink `#0F1220`; keep `#34D399`;
 toss `#FF4D67`. The logo source of truth is `assets/logo.svg` — regenerate
-raster art with `npm run assets` rather than editing PNGs.
+raster art with `npm run assets` rather than editing PNGs. That command also
+produces the mobile app icons, so don't hand-edit anything in
+`mobile/assets/images/`.
+
+## Licensing your contribution
+
+Tidy Roll is GPL-3.0 **plus** an additional permission for app store
+distribution — see [`LICENSE-EXCEPTION.md`](LICENSE-EXCEPTION.md). By opening a
+pull request you agree your contribution is licensed under those same terms.
+You keep the copyright in your own work; there's no assignment and no CLA to
+sign.
+
+This matters practically: without that shared permission, a single contributor's
+code could block the project from shipping to the App Store. Keeping every
+contribution under the same terms is what keeps iOS releases possible.

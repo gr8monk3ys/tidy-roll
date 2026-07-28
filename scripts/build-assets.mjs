@@ -149,6 +149,54 @@ async function main() {
   console.log('promo tiles written');
   // (The site's social/OG card is generated in code by site/app/opengraph-image.tsx.)
 
+  // --- mobile app icons ---------------------------------------------------
+  // iOS wants a full-bleed square (it applies its own corner mask), while
+  // Android's adaptive icon and the splash want the mark alone on
+  // transparency, inset so Android's mask can't clip it.
+  const MOBILE = path.join(ROOT, 'mobile', 'assets', 'images');
+  await mkdir(MOBILE, { recursive: true });
+
+  const squareLogo = logoSVG.replace(
+    '<rect width="1024" height="1024" rx="224"',
+    '<rect width="1024" height="1024"',
+  );
+  const markOnly = logoSVG
+    .replace('viewBox="0 0 1024 1024"', 'viewBox="120 250 620 620"')
+    .replace(/<rect width="1024" height="1024" rx="224" fill="url\(#tr-bg\)"\/>\s*/, '');
+
+  const renderSVG = async (svg, { size, inset = 1, out, transparent = false }) => {
+    await page.goto('about:blank');
+    await page.setViewportSize({ width: size, height: size });
+    await page.setContent(
+      `<style>html,body{margin:0}
+       .wrap{width:${size}px;height:${size}px;display:flex;align-items:center;justify-content:center}
+       .art{width:${Math.round(size * inset)}px;height:${Math.round(size * inset)}px}
+       .art svg{width:100%;height:100%;display:block}</style>
+       <div class="wrap"><div class="art">${svg}</div></div>`,
+    );
+    await page.screenshot({ path: out, omitBackground: transparent });
+  };
+
+  // Android composes adaptive icons from a background + foreground layer, so
+  // give it the brand gradient as the background rather than a flat color —
+  // that keeps the Android icon looking like the iOS one.
+  const adaptiveBG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+    <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="${BRAND.gradA}"/><stop offset="1" stop-color="${BRAND.gradB}"/>
+    </linearGradient></defs>
+    <rect width="1024" height="1024" fill="url(#bg)"/></svg>`;
+
+  await renderSVG(squareLogo, { size: 1024, out: path.join(MOBILE, 'icon.png') });
+  await renderSVG(adaptiveBG, { size: 1024, out: path.join(MOBILE, 'adaptive-icon-bg.png') });
+  await renderSVG(markOnly, {
+    size: 1024, inset: 0.66, out: path.join(MOBILE, 'adaptive-icon.png'), transparent: true,
+  });
+  await renderSVG(markOnly, {
+    size: 1024, inset: 0.72, out: path.join(MOBILE, 'splash-icon.png'), transparent: true,
+  });
+  await renderSVG(logoSVG, { size: 48, out: path.join(MOBILE, 'favicon.png'), transparent: true });
+  console.log('mobile icons written: icon, adaptive-icon, splash-icon, favicon');
+
   await browser.close();
 }
 

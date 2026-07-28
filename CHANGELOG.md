@@ -4,6 +4,37 @@ All notable changes to Tidy Roll are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- **The mobile app now carries the Tidy Roll brand.** `mobile/src/theme.ts`
+  moved to the shared sunset palette, the four mode-card gradients became
+  centralized tokens instead of hardcoded hex values, and the app icons,
+  adaptive icon (with a real gradient background layer) and splash are now
+  generated from `assets/logo.svg` by `npm run assets`.
+- **Support, privacy and terms are now first-class pages on the site**
+  (`/support`, `/privacy`, `/terms`), sharing the site's design system instead
+  of a separate stylesheet. The old `/privacy.html` and `/terms.html` URLs
+  permanently redirect, and the duplicated `mobile/static-site/` bundle is gone.
+- Contact points at GitHub Issues rather than an email address on a domain the
+  project may not control.
+- README and site copy lead with Android/iOS; the browser extension is
+  presented as the optional bonus it is.
+
+### Added
+
+- **App store distribution exception to the licence**
+  ([`LICENSE-EXCEPTION.md`](LICENSE-EXCEPTION.md)), so outside contributions can
+  never block an iOS release, plus the matching term in `CONTRIBUTING.md`.
+- Monetization policy in `docs/MARKETING.md` — no ads, ever — and
+  `.github/FUNDING.yml`.
+
+### Fixed
+
+- Removed a contributor's local filesystem paths from
+  `mobile/store/submission-checklist.md` before the repo goes public.
+
 ## [1.0.0] - 2026-07-27
 
 ### Added

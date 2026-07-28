@@ -237,7 +237,7 @@ export default function HomeScreen() {
         <View style={styles.modeRow}>
           <Pressable style={styles.modePress} onPress={() => onPressOnThisDay(onThisDayDate)}>
             <LinearGradient
-              colors={['#00D1FF', '#5B2EFF']}
+              colors={theme.gradients.onThisDay}
               start={{ x: 0.1, y: 0.1 }}
               end={{ x: 0.9, y: 0.9 }}
               style={styles.modeCard}>
@@ -263,7 +263,7 @@ export default function HomeScreen() {
 
           <Pressable style={styles.modePress} onPress={onPressRecents}>
             <LinearGradient
-              colors={['#FF4D4D', '#FFB86B']}
+              colors={theme.gradients.recents}
               start={{ x: 0.05, y: 0.1 }}
               end={{ x: 0.95, y: 0.95 }}
               style={styles.modeCard}>
@@ -279,7 +279,7 @@ export default function HomeScreen() {
         <View style={styles.modeRow}>
           <Pressable style={styles.modePress} onPress={onPressRandom}>
             <LinearGradient
-              colors={['#37D67A', '#00D1FF']}
+              colors={theme.gradients.random}
               start={{ x: 0.05, y: 0.1 }}
               end={{ x: 0.95, y: 0.95 }}
               style={styles.modeCardSmall}>
@@ -290,7 +290,7 @@ export default function HomeScreen() {
 
           <Pressable style={styles.modePress} onPress={onPressAlbums}>
             <LinearGradient
-              colors={['#FFD166', '#FF4D4D']}
+              colors={theme.gradients.albums}
               start={{ x: 0.05, y: 0.1 }}
               end={{ x: 0.95, y: 0.95 }}
               style={styles.modeCardSmall}>

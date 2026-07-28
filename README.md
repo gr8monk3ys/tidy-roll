@@ -4,7 +4,8 @@
 
 <p align="center">
   <a href="https://github.com/gr8monk3ys/tidy-roll/actions/workflows/ci.yml"><img src="https://github.com/gr8monk3ys/tidy-roll/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <img src="https://img.shields.io/badge/manifest-v3-ff3d81" alt="Manifest V3">
+  <img src="https://img.shields.io/badge/platforms-Android%20%7C%20iOS-ff3d81" alt="Android and iOS">
+  <img src="https://img.shields.io/badge/price-free%2C%20no%20ads-34d399" alt="Free, no ads">
   <img src="https://img.shields.io/badge/privacy-100%25%20on--device-34d399" alt="100% on-device">
   <img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License: GPL-3.0">
 </p>
@@ -13,136 +14,157 @@
 
 **A Tinder-swipe UI/UX for cleaning up your photos.**
 
-🌐 **[tidyroll-legal.vercel.app](https://tidyroll-legal.vercel.app)** — try the live swipe demo right on the site.
-
 Tidy Roll deals your photos out one card at a time: swipe **right to keep**,
 **left to toss**, and watch the megabytes you'll reclaim tick up. When you're
-done you get a summary of everything you tossed — nothing is touched until
-you confirm it. It ships two ways:
+done you get a summary of everything you tossed — nothing is deleted until you
+confirm it.
+
+🌐 **[Try the live demo →](https://tidyroll-legal.vercel.app)** — the real swipe
+deck runs right on the site, no install needed.
+
+Free, no ads, no accounts, no tracking. It runs everywhere your photos are:
 
 | Where | What | Lives in |
 | --- | --- | --- |
-| 🖥 **Desktop browsers** (Chrome, Edge, Brave, Arc, Opera) | MV3 extension that tidies any local folder | [`extension/`](extension/) |
-| 📱 **Android & iOS** | Native Expo/React Native app that tidies your actual camera roll | [`mobile/`](mobile/) |
+| 📱 **Android & iOS** | Native app that tidies your actual camera roll | [`mobile/`](mobile/) |
+| 🌐 **The web** | Showcase site with a playable demo of the swipe deck | [`site/`](site/) |
+| 🖥 **Desktop browsers** | Optional extension that tidies any local folder | [`extension/`](extension/) |
 
-## ✨ Features
+## 📱 Android & iOS
 
-- 🃏 **Swipe deck** — drag with mouse or touch, with springy card physics and KEEP/TOSS stamps
-- ⌨️ **Keyboard-first** — `←` toss, `→` keep, `↓` skip for now, `Z` undo
-- 🗂 **Safety folder by default** — tossed files move to a `Tidy Roll - Tossed` folder inside the folder you're tidying; permanent delete is opt-in
-- 🧾 **Review before anything happens** — a summary grid with per-photo restore, so a stray swipe never costs you a memory
-- 📊 **Space reclaimed** — live per-session stats plus lifetime totals in the popup
-- 🔀 **Review orders** — oldest first, newest first, largest first, or shuffle
-- 📁 **Recent folders & subfolder scanning** — pick up where you left off
-- 🎞 **Videos too** — mp4/webm play right on the card (toggle in settings)
-- 🔒 **100% on-device** — no accounts, no uploads, no analytics, no network calls. The only permission it asks for is `storage` (for your settings and stats)
-- 🧪 **Demo roll** — try the whole flow on bundled sample photos without touching your files
+The main event. The native app brings the swipe flow to your real camera roll —
+month-by-month sessions, **On This Day**, albums, bookmarks, and staged deletes
+through the system photo library, so the space you free up is space you actually
+get back.
 
-## 📸 Screenshots
+```bash
+cd mobile
+npm install
+npm run android      # or: npm run ios
+```
+
+iOS runs in Expo Go. Android may need a development build for full
+media-library access on recent versions. Store-ready EAS build profiles and the
+Play/App Store metadata are included — see [`mobile/README.md`](mobile/README.md)
+and [`mobile/store/`](mobile/store/).
+
+> **Not on the stores yet.** Everything needed to submit is prepared; what's
+> left is running the EAS builds against your own developer accounts. The
+> [submission checklist](mobile/store/submission-checklist.md) walks through it.
+
+### Features
+
+- 🃏 **Swipe deck** — springy card physics with KEEP/TOSS stamps
+- 🗓 **On This Day** — revisit memories from this date across the years, with a streak
+- 📆 **Month-by-month** — chronological cleanup with saved progress
+- 🔀 **Random** — shuffle a chunk of recents when you can't face the whole roll
+- 📚 **Albums** — swiping left removes from the album or deletes from the library, your choice
+- 🔖 **Bookmarks** — park the hard calls and come back to them
+- 🧾 **Staged deletes** — nothing leaves your library until you confirm
+- 📊 **Stats** — what you've reviewed, tossed, and reclaimed
+
+## 🌐 The site
+
+[tidyroll-legal.vercel.app](https://tidyroll-legal.vercel.app) — Next.js 15,
+Tailwind 4 and Framer Motion, with a fully playable swipe deck in the hero. It
+also serves the [support](https://tidyroll-legal.vercel.app/support),
+[privacy](https://tidyroll-legal.vercel.app/privacy) and
+[terms](https://tidyroll-legal.vercel.app/terms) pages the app stores require.
+
+```bash
+cd site
+npm install
+npm run dev
+```
+
+## 🖥 Browser extension (optional)
+
+A Manifest V3 extension that applies the same swipe flow to any folder on your
+computer — handy for a Downloads or Screenshots folder. It's a bonus, not the
+main product.
+
+<details>
+<summary>Install and details</summary>
+
+1. Clone or [download](https://github.com/gr8monk3ys/tidy-roll/archive/refs/heads/main.zip) this repo.
+2. Open `chrome://extensions` (or Edge/Brave/Arc/Opera).
+3. Turn on **Developer mode**, click **Load unpacked**, and select `extension/`.
+4. Pin Tidy Roll and click it → **Start tidying**.
+
+Keyboard-first: `←` toss, `→` keep, `↓` skip, `Z` undo. Tossed files move to a
+`Tidy Roll - Tossed` folder inside the folder you tidied; permanent delete is
+opt-in and confirms twice. Includes review orders, subfolder scanning, video
+playback, recent folders, and a demo roll.
+
+It uses the [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API),
+so it needs a Chromium-based browser. Firefox and Safari don't support
+extension folder access yet.
 
 | The deck | The summary |
 | --- | --- |
 | ![Swiping a card with the KEEP stamp showing](assets/screenshots/02-deck.png) | ![Summary of tossed photos before confirming](assets/screenshots/03-summary.png) |
 
-| Home | All done |
-| --- | --- |
-| ![Home screen](assets/screenshots/01-home.png) | ![Done screen with session stats](assets/screenshots/04-done.png) |
-
-## 🚀 Install
-
-### Chrome Web Store
-
-Coming soon — the store package is built from this repo with `npm run package`.
-
-### Load unpacked (today)
-
-1. Clone or [download](https://github.com/gr8monk3ys/tidy-roll/archive/refs/heads/main.zip) this repo.
-2. Open `chrome://extensions` in Chrome (or Edge/Brave/Arc/Opera).
-3. Turn on **Developer mode** (top right).
-4. Click **Load unpacked** and select the `extension/` folder.
-5. Pin Tidy Roll and click it → **Start tidying**.
-
-> The extension uses the [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API),
-> so it needs a Chromium-based browser. Firefox and Safari don't support
-> extension folder access yet — on your phone, use the mobile app below.
-
-### 📱 Android & iOS
-
-The native app in [`mobile/`](mobile/) brings the same swipe flow to your
-actual camera roll — month-by-month sessions, On This Day, albums,
-bookmarks, and staged deletes through the system photo library, so freed
-space is real space.
-
-```bash
-cd mobile
-npm install
-npm run ios      # or: npm run android
-```
-
-Store-ready EAS build profiles and the Google Play / App Store metadata are
-included — see [`mobile/README.md`](mobile/README.md) and
-[`mobile/store/`](mobile/store/).
-
-## 🕹 How it works
-
-1. **Pick a folder** (or hit *Try the demo roll* first).
-2. **Swipe.** Right/`→` keeps, left/`←` tosses, `↓` skips to the end of the deck, `Z` undoes. Nothing is written to disk during this phase.
-3. **Review the summary.** Restore anything you want back with one click.
-4. **Confirm.** Tossed files move into `Tidy Roll - Tossed` inside your folder (default), or are deleted permanently if you switched modes in settings.
-
-| Key | Action |
-| --- | --- |
-| `→` | Keep |
-| `←` | Toss |
-| `↓` | Skip for now (comes back at the end) |
-| `Z` | Undo last swipe |
+</details>
 
 ## 🔐 Privacy
 
-Tidy Roll never sees the internet. There is no server, no telemetry, no
-tracking, and the extension requests no host permissions — see
-[PRIVACY.md](PRIVACY.md) for the full policy. Folder access is granted by you,
-per folder, through the browser's own picker, and can be revoked at any time.
+Tidy Roll never sees the internet. No accounts, no servers, no telemetry, no
+crash reporting, no ads, no third-party SDKs. The mobile app uses the system
+photo library; the extension reads from a folder you pick through the browser's
+own picker and requests no host permissions. See
+[PRIVACY.md](PRIVACY.md) — and because it's open source, you don't have to take
+our word for it.
+
+## 💸 Price
+
+Free, and intended to stay that way — no ads, no subscription, no paywall on the
+core experience. See [docs/MARKETING.md](docs/MARKETING.md) for how the store
+fees are funded without compromising that.
 
 ## 🛠 Development
 
-No build step, no dependencies — the extension is plain ES modules.
-
 ```bash
-npm test              # unit tests (node:test) for the session logic + manifest checks
-npm run package       # build dist/tidy-roll-v<version>.zip for the Chrome Web Store
-npm run assets        # regenerate icons/banner/promo tiles from assets/logo.svg
-npm run screenshots   # re-capture README/store screenshots headlessly
+npm test              # extension unit tests (node:test) + manifest checks
+npm run package       # build dist/tidy-roll-v<version>.zip
+npm run assets        # regenerate all brand art + mobile icons from assets/logo.svg
+npm run screenshots   # re-capture screenshots headlessly
+
+cd mobile && npm run lint && npm run typecheck && npm test
+cd site   && npm run build
 ```
 
 The asset scripts need `playwright` resolvable (e.g. `npm i -g playwright`).
 
 ```text
-extension/            the unpacked extension (this is what ships)
-  manifest.json       MV3 manifest — storage permission only
-  popup/              toolbar popup: lifetime stats + launch button
-  app/                the full-tab swipe app
-    core.js           pure session state machine (unit tested)
-    files.js          File System Access layer; all disk writes live here
-    demo.js           bundled demo roll
-mobile/               Android/iOS app (Expo / React Native, self-contained)
+mobile/               Android/iOS app (Expo / React Native) — the main product
+  src/theme.ts        design tokens; screens reference these, never raw hex
+  store/              Play + App Store metadata and submission checklist
 site/                 showcase site (Next.js 15 + Tailwind 4 + Framer Motion)
+  app/                landing page, support, privacy, terms, generated OG image
+extension/            optional MV3 browser extension
+  app/core.js         pure session state machine (unit tested)
+  app/files.js        File System Access layer; all disk writes live here
 assets/               brand source (logo.svg) + generated art
 scripts/              asset/screenshot/packaging tooling
 tests/                node:test suites
 docs/                 store listing kit + marketing playbook
 ```
 
-Design tokens: gradient `#FF7A59 → #FF3D81` on ink `#0F1220`, keep
-`#34D399`, toss `#FF4D67`.
+Design tokens: gradient `#FF7A59 → #FF3D81` on ink `#0F1220`, keep `#34D399`,
+toss `#FF4D67`. `assets/logo.svg` is the single source of truth for all icons —
+run `npm run assets` rather than editing PNGs.
 
 ## 🗺 Roadmap
 
+- [ ] Ship to Google Play, then the App Store
 - [ ] Near-duplicate detection (perceptual hashing) to auto-group burst shots
 - [ ] HEIC preview via a WASM decoder
-- [ ] Session resume for folders with thousands of photos
 - [ ] Localization
 
 ## 📄 License
 
-[GPL-3.0](LICENSE) © [gr8monk3ys](https://github.com/gr8monk3ys)
+[GPL-3.0](LICENSE) with an [additional permission for app store
+distribution](LICENSE-EXCEPTION.md) © 2026 [gr8monk3ys](https://github.com/gr8monk3ys)
+
+Contributions are accepted under those same terms — see
+[CONTRIBUTING.md](CONTRIBUTING.md).
