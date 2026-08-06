@@ -43,4 +43,3 @@ export async function fetchOldestAsset(): Promise<MediaLibrary.Asset | null> {
   });
   return page.assets[0] ?? null;
 }
-

@@ -32,4 +32,3 @@ export function formatShortDate(ms: number): string {
 export function formatTime(ms: number): string {
   return format(new Date(ms), 'h:mm a');
 }
-

@@ -29,11 +29,40 @@ All notable changes to Tidy Roll are documented here. The format follows
   never block an iOS release, plus the matching term in `CONTRIBUTING.md`.
 - Monetization policy in `docs/MARKETING.md` — no ads, ever — and
   `.github/FUNDING.yml`.
+- [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md), so expectations are written down
+  before the repo opens to the public.
 
 ### Fixed
 
 - Removed a contributor's local filesystem paths from
   `mobile/store/submission-checklist.md` before the repo goes public.
+- Seven files were missing their trailing newline; fixed by the pre-commit
+  `end-of-file-fixer` hook, which CI's new `hygiene` job now enforces.
+
+### Security
+
+- **Dependency patches across the repo.** The mobile lockfile picks up the
+  fixed `brace-expansion` (1.1.18), `fast-uri` (3.1.5), `js-yaml`, and `ws`
+  releases (consolidating Dependabot PRs #23 and #24), and both `mobile/` and
+  `site/` pin `postcss` ≥ 8.5.23 via npm `overrides` — closing every high
+  severity advisory without waiting on the Expo SDK 57 / Next 16 majors. The
+  site also pins `sharp` ≥ 0.35 for the libvips CVEs; `npm audit` for the site
+  is now clean, and the 17 advisories left in `mobile/` are all moderates
+  confined to Expo's dev-time CLI/prebuild tooling, to be cleared by the SDK 57
+  migration (Dependabot PR #22).
+- **CI no longer depends on private infrastructure.** The eight `org-*`
+  workflows called reusable workflows in the private `gr8monk3ys/github` repo —
+  which a public repo cannot use, so every one of them (including
+  `org-release-please`, which fired on each push to `main`) would fail once the
+  repo goes public. They're replaced by a public, self-contained set: a real
+  [CodeQL](.github/workflows/codeql.yml) workflow for SAST (free on public
+  repos), a `hygiene` job in [`ci.yml`](.github/workflows/ci.yml) running the
+  repo's pre-commit hooks (including `detect-private-key`), and pinned Node 22
+  setup for reproducible test runs. The placeholder `security-baseline.yml`
+  (which only echoed a message), the deprecated `returntocorp/semgrep-action`
+  workflow, and the Scorecard seed file are gone. Secret scanning, push
+  protection, and Dependabot alerts activate natively when the repo flips
+  public.
 
 ## [1.0.0] - 2026-07-27
 

@@ -16,4 +16,3 @@ You will need real screenshots for submission.
 - Avoid showing sensitive personal info.
 - Use the same theme and wording across iOS/Android.
 - Double-check the latest store device-size requirements before exporting.
-

@@ -1,6 +1,7 @@
 # Contributing to Tidy Roll
 
-Thanks for helping tidy the world's camera rolls! This repo contains two
+Thanks for helping tidy the world's camera rolls! Participation is covered by
+the [Code of Conduct](CODE_OF_CONDUCT.md). This repo contains two
 apps that share one identity:
 
 | Path | What it is | Stack |

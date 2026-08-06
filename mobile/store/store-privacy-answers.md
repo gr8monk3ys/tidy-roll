@@ -26,4 +26,3 @@ If Apple requires you to list “Data Not Collected”, select that.
 ## Permissions (informational)
 
 - Photos/Media library: used to display and manage items on-device.
-

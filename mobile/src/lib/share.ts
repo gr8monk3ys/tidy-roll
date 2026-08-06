@@ -29,4 +29,3 @@ export async function shareAssetById(assetId: string): Promise<void> {
   // Fallback (web or platforms without Expo Sharing)
   await Share.share({ url: shareUri, message: shareUri });
 }
-
