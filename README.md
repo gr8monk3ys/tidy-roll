@@ -4,6 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/gr8monk3ys/tidy-roll/actions/workflows/ci.yml"><img src="https://github.com/gr8monk3ys/tidy-roll/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/gr8monk3ys/tidy-roll/actions/workflows/codeql.yml"><img src="https://github.com/gr8monk3ys/tidy-roll/actions/workflows/codeql.yml/badge.svg" alt="CodeQL"></a>
   <img src="https://img.shields.io/badge/platforms-Android%20%7C%20iOS-ff3d81" alt="Android and iOS">
   <img src="https://img.shields.io/badge/price-free%2C%20no%20ads-34d399" alt="Free, no ads">
   <img src="https://img.shields.io/badge/privacy-100%25%20on--device-34d399" alt="100% on-device">
