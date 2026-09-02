@@ -4,6 +4,22 @@ All notable changes to Tidy Roll are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## 1.0.0 (2026-09-02)
+
+
+### Features
+
+* bring the Expo mobile app into mobile/ (Android + iOS) ([26c337a](https://github.com/gr8monk3ys/tidy-roll/commit/26c337ad7a98c59481d12600cc9c06e2647320b9))
+* showcase site in Next.js 15, deployed to Vercel + marketing playbook ([5f0b844](https://github.com/gr8monk3ys/tidy-roll/commit/5f0b844473a7c730b9d0d67dbd49f4b957063022))
+* Tidy Roll browser extension with full brand identity, tests, and store kit ([a8f1583](https://github.com/gr8monk3ys/tidy-roll/commit/a8f158313d316e7b105db81b0f58fe3d72c83b4e))
+
+
+### Bug Fixes
+
+* **ci:** repoint org workflows to the public reusable home ([#29](https://github.com/gr8monk3ys/tidy-roll/issues/29)) ([ca96091](https://github.com/gr8monk3ys/tidy-roll/commit/ca96091326732d1170dda13ed2fab6a961bb869e))
+* pre-public cleanup — brand the mobile app, licence exception, contact + docs ([13a9398](https://github.com/gr8monk3ys/tidy-roll/commit/13a939857fd2caae9e8efae7b598a3938f2da978))
+* **site:** absolute nav anchors so they work from subpages ([65de42c](https://github.com/gr8monk3ys/tidy-roll/commit/65de42c5d67d107a43b34654f29864b7175c0d4d))
+
 ## [Unreleased]
 
 ### Changed
