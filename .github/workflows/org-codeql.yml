@@ -13,3 +13,8 @@ permissions:
 jobs:
   codeql:
     uses: gr8monk3ys/org-workflows/.github/workflows/reusable-codeql.yml@2659a9a32c4e6e3858f69a2f502210941a886d5a
+    with:
+      # The reusable defaults to "python,javascript-typescript". There is no
+      # Python here, and CodeQL exits 32 at `database finalize` when a
+      # requested language has no source, so every run failed before this.
+      languages: javascript-typescript
