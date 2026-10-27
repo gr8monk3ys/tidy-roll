@@ -4,9 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { theme } from '@/src/theme';
 import { useAppStore } from '@/src/store/appStore';
+import { formatBytes } from '@/src/lib/bytes';
 import { getMediaPermission, presentLimitedLibraryPickerIfAvailable, type MediaPermission } from '@/src/lib/media';
 
-function StatRow({ label, value }: { label: string; value: number }) {
+function StatRow({ label, value }: { label: string; value: number | string }) {
   return (
     <View style={styles.statRow}>
       <Text style={styles.statLabel}>{label}</Text>
@@ -57,6 +58,7 @@ export default function StatsScreen() {
         <StatRow label="Bookmarked" value={stats.bookmarked} />
         <StatRow label="Deleted" value={stats.deleted} />
         <StatRow label="Removed from albums" value={stats.removedFromAlbums ?? 0} />
+        <StatRow label="Space reclaimed" value={formatBytes(stats.bytesReclaimed ?? 0)} />
 
         <View style={styles.divider} />
 

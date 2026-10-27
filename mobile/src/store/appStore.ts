@@ -49,6 +49,8 @@ export type AppStats = {
   bookmarked: number;
   deleted: number;
   removedFromAlbums: number;
+  /** Bytes freed by confirmed library deletes (only sizes that could be measured). */
+  bytesReclaimed: number;
 };
 
 type AppState = {
@@ -85,6 +87,7 @@ const DEFAULT_STATS: AppStats = {
   bookmarked: 0,
   deleted: 0,
   removedFromAlbums: 0,
+  bytesReclaimed: 0,
 };
 
 const DEFAULT_ON_THIS_DAY: OnThisDayState = {
@@ -161,6 +164,7 @@ export const useAppStore = create<AppState>()(
             bookmarked: (state.stats.bookmarked ?? 0) + (delta.bookmarked ?? 0),
             deleted: (state.stats.deleted ?? 0) + (delta.deleted ?? 0),
             removedFromAlbums: (state.stats.removedFromAlbums ?? 0) + (delta.removedFromAlbums ?? 0),
+            bytesReclaimed: (state.stats.bytesReclaimed ?? 0) + (delta.bytesReclaimed ?? 0),
           },
         })),
 
