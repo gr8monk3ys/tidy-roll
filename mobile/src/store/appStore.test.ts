@@ -28,6 +28,7 @@ const DEFAULT_STATS: AppStats = {
   bookmarked: 0,
   deleted: 0,
   removedFromAlbums: 0,
+  bytesReclaimed: 0,
 };
 
 function makeBookmark(id: string): BookmarkAsset {
@@ -149,7 +150,23 @@ describe('bumpStats', () => {
       bookmarked: 1,
       deleted: 0,
       removedFromAlbums: 0,
+      bytesReclaimed: 0,
     });
+  });
+
+  it('accumulates reclaimed bytes alongside the delete count', () => {
+    useAppStore.getState().bumpStats({ deleted: 2, bytesReclaimed: 3_000_000 });
+    useAppStore.getState().bumpStats({ deleted: 1, bytesReclaimed: 500_000 });
+    const { deleted, bytesReclaimed } = useAppStore.getState().stats;
+    expect(deleted).toBe(3);
+    expect(bytesReclaimed).toBe(3_500_000);
+  });
+
+  it('treats bytesReclaimed missing from stats persisted before it existed as 0', () => {
+    const { bytesReclaimed: _omit, ...legacy } = DEFAULT_STATS;
+    useAppStore.setState({ stats: legacy as AppStats });
+    useAppStore.getState().bumpStats({ bytesReclaimed: 1024 });
+    expect(useAppStore.getState().stats.bytesReclaimed).toBe(1024);
   });
 
   it('supports negative deltas for undo flows', () => {

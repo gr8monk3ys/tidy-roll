@@ -1,3 +1,4 @@
+import { File } from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 
 export type MediaPermission = {
@@ -44,3 +45,13 @@ export async function fetchOldestAsset(): Promise<MediaLibrary.Asset | null> {
   return page.assets[0] ?? null;
 }
 
+/**
+ * On-disk size of a library asset in bytes, or null when it can't be measured
+ * (e.g. an iCloud-only original that isn't downloaded). Never hits the network.
+ */
+export async function getAssetFileSize(assetId: string): Promise<number | null> {
+  const info = await MediaLibrary.getAssetInfoAsync(assetId, { shouldDownloadFromNetwork: false });
+  if (!info.localUri) return null;
+  const size = new File(info.localUri).size;
+  return size > 0 ? size : null;
+}
