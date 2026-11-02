@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -8,6 +8,8 @@ import * as MediaLibrary from 'expo-media-library';
 import { theme } from '@/src/theme';
 import { useSessionStore } from '@/src/store/sessionStore';
 import { useAppStore } from '@/src/store/appStore';
+import { formatBytes, sumKnownSizes, type SizeTotal } from '@/src/lib/bytes';
+import { getAssetFileSize } from '@/src/lib/media';
 
 export default function SummaryScreen() {
   const router = useRouter();
@@ -23,6 +25,27 @@ export default function SummaryScreen() {
 
   const stagedIds = useMemo(() => summary?.deletedAssets.map((a) => a.id) ?? [], [summary?.deletedAssets]);
   const isRemoveFromAlbum = summary?.commit.type === 'removeFromAlbum';
+
+  // Measure staged deletes up front: sizes can't be read once the assets are gone.
+  // Album removals free no space, so they are never measured.
+  const [sizeTotal, setSizeTotal] = useState<SizeTotal | null>(null);
+  const sizePromise = useRef<Promise<SizeTotal> | null>(null);
+  useEffect(() => {
+    if (isRemoveFromAlbum || stagedIds.length === 0) {
+      sizePromise.current = null;
+      setSizeTotal(null);
+      return;
+    }
+    let cancelled = false;
+    const pending = sumKnownSizes(stagedIds, getAssetFileSize);
+    sizePromise.current = pending;
+    pending.then((total) => {
+      if (!cancelled) setSizeTotal(total);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [isRemoveFromAlbum, stagedIds]);
 
   const onDone = useCallback(() => {
     if (sessionId) clearSummary(sessionId);
@@ -49,9 +72,10 @@ export default function SummaryScreen() {
         return;
       }
 
+      const measured = sizePromise.current ? await sizePromise.current : null;
       const ok = await MediaLibrary.deleteAssetsAsync(stagedIds);
       if (ok) {
-        bumpStats({ deleted: summary.deletedAssets.length });
+        bumpStats({ deleted: summary.deletedAssets.length, bytesReclaimed: measured?.bytes ?? 0 });
         summary.deletedAssets.forEach((a) => removeBookmark(a.id));
         Alert.alert('Deleted', `Deleted ${summary.deletedAssets.length} item(s).`);
         onDone();
@@ -139,6 +163,17 @@ export default function SummaryScreen() {
           <Text style={styles.statLabel}>{isRemoveFromAlbum ? 'To remove' : 'To delete'}</Text>
           <Text style={styles.statValue}>{summary.deleted}</Text>
         </View>
+        {!isRemoveFromAlbum && summary.deletedAssets.length ? (
+          <View style={styles.statRow}>
+            <Text style={styles.statLabel}>Space to free</Text>
+            <Text style={styles.statValue}>{sizeTotal ? formatBytes(sizeTotal.bytes) : 'Measuring...'}</Text>
+          </View>
+        ) : null}
+        {sizeTotal && sizeTotal.unknown > 0 ? (
+          <Text style={styles.textDim}>
+            {sizeTotal.unknown} item(s) couldn&apos;t be measured (e.g. stored only in iCloud) and aren&apos;t counted.
+          </Text>
+        ) : null}
       </View>
 
       {summary.deletedAssets.length ? (

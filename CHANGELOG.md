@@ -45,6 +45,9 @@ All notable changes to Tidy Roll are documented here. The format follows
   never block an iOS release, plus the matching term in `CONTRIBUTING.md`.
 - Monetization policy in `docs/MARKETING.md` — no ads, ever — and
   `.github/FUNDING.yml`.
+- **Space reclaimed on mobile.** The session summary shows how much space the
+  staged deletes will free, and Stats keeps an all-time "Space reclaimed"
+  total, matching what the README and the extension already offered.
 
 ### Fixed
 
