@@ -4,6 +4,14 @@ All notable changes to Tidy Roll are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [1.1.0](https://github.com/gr8monk3ys/tidy-roll/compare/v1.0.0...v1.1.0) (2026-11-02)
+
+
+### Features
+
+* **mobile:** show space reclaimed in session summary and stats ([9f253f3](https://github.com/gr8monk3ys/tidy-roll/commit/9f253f32d7a482b277368cd966b9279a9f465f51))
+* show space reclaimed in the mobile session summary and stats ([#60](https://github.com/gr8monk3ys/tidy-roll/issues/60)) ([9f253f3](https://github.com/gr8monk3ys/tidy-roll/commit/9f253f32d7a482b277368cd966b9279a9f465f51))
+
 ## 1.0.0 (2026-10-12)
 
 
