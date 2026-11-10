@@ -28,6 +28,8 @@ export type SessionSummary = {
   bookmarked: number;
   deletedAssets: SessionAsset[];
   commit: CommitAction;
+  /** Paging cursor to fall back to if the saved one points at an asset this session removes. */
+  resumeAfter?: string;
 };
 
 type SessionStore = {

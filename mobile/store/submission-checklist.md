@@ -47,7 +47,7 @@ eas submit --platform ios --profile production
 - Version: `1.0.0` (`mobile/app.json` → `expo.version`)
 - Build number: `1` (`mobile/app.json` → `expo.ios.buildNumber`)
 - Privacy labels: see `store-privacy-answers.md`
-- Screenshots: iPhone required, iPad optional
+- Screenshots: iPhone required. iPad (13") is also required while `expo.ios.supportsTablet` is `true` in `mobile/app.json`; set it to `false` to ship iPhone-only.
 
 ## Google Play Console (Android)
 
