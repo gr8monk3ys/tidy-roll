@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, ActivityIndicator, FlatList, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
@@ -9,7 +9,24 @@ import { theme } from '@/src/theme';
 import { useSessionStore } from '@/src/store/sessionStore';
 import { useAppStore } from '@/src/store/appStore';
 import { formatBytes, sumKnownSizes, type SizeTotal } from '@/src/lib/bytes';
-import { getAssetFileSize } from '@/src/lib/media';
+import { assetExists, getAssetFileSize } from '@/src/lib/media';
+import { confirmAndCommit } from '@/src/lib/deleteFlow';
+import { progressAfterRemoval } from '@/src/lib/progress';
+
+/** Resolves true only when the destructive button is pressed; Cancel or dismissing resolves false. */
+function confirmAsync(title: string, message: string, confirmLabel: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    Alert.alert(
+      title,
+      message,
+      [
+        { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
+        { text: confirmLabel, style: 'destructive', onPress: () => resolve(true) },
+      ],
+      { cancelable: true, onDismiss: () => resolve(false) }
+    );
+  });
+}
 
 export default function SummaryScreen() {
   const router = useRouter();
@@ -17,11 +34,13 @@ export default function SummaryScreen() {
 
   const summary = useSessionStore((s) => (sessionId ? s.summaries[sessionId] : undefined));
   const clearSummary = useSessionStore((s) => s.clearSummary);
+  const setSummary = useSessionStore((s) => s.setSummary);
 
   const bumpStats = useAppStore((s) => s.bumpStats);
   const removeBookmark = useAppStore((s) => s.removeBookmark);
 
   const [deleting, setDeleting] = useState(false);
+  const commitInFlight = useRef(false);
 
   const stagedIds = useMemo(() => summary?.deletedAssets.map((a) => a.id) ?? [], [summary?.deletedAssets]);
   const isRemoveFromAlbum = summary?.commit.type === 'removeFromAlbum';
@@ -30,6 +49,7 @@ export default function SummaryScreen() {
   // Album removals free no space, so they are never measured.
   const [sizeTotal, setSizeTotal] = useState<SizeTotal | null>(null);
   const sizePromise = useRef<Promise<SizeTotal> | null>(null);
+  const sizeById = useRef(new Map<string, number>());
   useEffect(() => {
     if (isRemoveFromAlbum || stagedIds.length === 0) {
       sizePromise.current = null;
@@ -37,7 +57,14 @@ export default function SummaryScreen() {
       return;
     }
     let cancelled = false;
-    const pending = sumKnownSizes(stagedIds, getAssetFileSize);
+    const pending = sumKnownSizes(stagedIds, async (id) => {
+      // Sizes survive a partial delete: what's already gone can't be measured again.
+      const known = sizeById.current.get(id);
+      if (known != null) return known;
+      const size = await getAssetFileSize(id);
+      if (size != null) sizeById.current.set(id, size);
+      return size;
+    });
     sizePromise.current = pending;
     pending.then((total) => {
       if (!cancelled) setSizeTotal(total);
@@ -52,47 +79,104 @@ export default function SummaryScreen() {
     router.replace('/');
   }, [clearSummary, router, sessionId]);
 
-  const doCommit = useCallback(async () => {
-    if (!summary) return;
-    if (summary.deletedAssets.length === 0) return;
+  // The reviewed count and paging cursor were saved while the removed items
+  // were still in the scope; bring them back in line so nothing is skipped.
+  const syncProgress = useCallback(
+    (removedIds: string[]) => {
+      if (!summary) return;
+      const { progressByScope, setScopeProgress } = useAppStore.getState();
+      const stored = progressByScope[summary.scopeKey];
+      if (!stored) return;
+      setScopeProgress(
+        summary.scopeKey,
+        progressAfterRemoval(stored, removedIds, summary.resumeAfter, Platform.OS, Date.now())
+      );
+    },
+    [summary]
+  );
+
+  const doRemoveFromAlbum = useCallback(async () => {
+    if (!summary || summary.commit.type !== 'removeFromAlbum') return;
     setDeleting(true);
     try {
-      if (summary.commit.type === 'removeFromAlbum') {
-        const ok = await MediaLibrary.removeAssetsFromAlbumAsync(stagedIds, summary.commit.albumId);
-        if (ok) {
-          bumpStats({ removedFromAlbums: summary.deletedAssets.length });
-          Alert.alert(
-            'Removed',
-            `Removed ${summary.deletedAssets.length} item(s) from "${summary.commit.albumTitle}".`
-          );
-          onDone();
-          return;
-        }
-        Alert.alert('Remove failed', 'Unable to remove those items from the album. Please try again.');
-        return;
-      }
-
-      const measured = sizePromise.current ? await sizePromise.current : null;
-      const ok = await MediaLibrary.deleteAssetsAsync(stagedIds);
+      const ok = await MediaLibrary.removeAssetsFromAlbumAsync(stagedIds, summary.commit.albumId);
       if (ok) {
-        bumpStats({ deleted: summary.deletedAssets.length, bytesReclaimed: measured?.bytes ?? 0 });
-        summary.deletedAssets.forEach((a) => removeBookmark(a.id));
-        Alert.alert('Deleted', `Deleted ${summary.deletedAssets.length} item(s).`);
+        bumpStats({ removedFromAlbums: summary.deletedAssets.length });
+        syncProgress(stagedIds);
+        Alert.alert(
+          'Removed',
+          `Removed ${summary.deletedAssets.length} item(s) from "${summary.commit.albumTitle}".`
+        );
         onDone();
         return;
       }
-      Alert.alert('Delete failed', 'Unable to delete those items. Please try again.');
+      Alert.alert('Remove failed', 'Unable to remove those items from the album. Please try again.');
     } catch {
-      Alert.alert(
-        summary.commit.type === 'removeFromAlbum' ? 'Remove failed' : 'Delete failed',
-        summary.commit.type === 'removeFromAlbum'
-          ? 'Unable to remove those items from the album. Please try again.'
-          : 'Unable to delete those items. Please try again.'
-      );
+      Alert.alert('Remove failed', 'Unable to remove those items from the album. Please try again.');
     } finally {
       setDeleting(false);
     }
-  }, [bumpStats, onDone, removeBookmark, stagedIds, summary]);
+  }, [bumpStats, onDone, stagedIds, summary, syncProgress]);
+
+  const onPressDelete = useCallback(async () => {
+    if (!summary || commitInFlight.current) return;
+    commitInFlight.current = true;
+    const total = stagedIds.length;
+    try {
+      const result = await confirmAndCommit(
+        stagedIds,
+        async () => {
+          const yes = await confirmAsync(
+            'Confirm deletion',
+            `Delete ${total} item(s) from your photo library? This can't be undone here.`,
+            'Delete'
+          );
+          if (yes) setDeleting(true);
+          return yes;
+        },
+        {
+          deleteAssets: async (ids) => {
+            // Sizes can't be read once the assets are gone, so finish measuring first.
+            if (sizePromise.current) await sizePromise.current;
+            return MediaLibrary.deleteAssetsAsync(ids);
+          },
+          assetExists,
+        }
+      );
+      if (result.status === 'cancelled') return;
+
+      if (result.deletedIds.length > 0) {
+        const bytes = result.deletedIds.reduce((sum, id) => sum + (sizeById.current.get(id) ?? 0), 0);
+        bumpStats({ deleted: result.deletedIds.length, bytesReclaimed: bytes });
+        result.deletedIds.forEach((id) => removeBookmark(id));
+        syncProgress(result.deletedIds);
+      }
+
+      if (result.status === 'deleted') {
+        Alert.alert('Deleted', `Deleted ${result.deletedIds.length} item(s).`);
+        onDone();
+        return;
+      }
+
+      if (result.status === 'partial') {
+        // Keep only what is still in the library staged, so a retry (or leaving)
+        // reflects reality instead of the original list.
+        const remaining = new Set(result.remainingIds);
+        const deletedAssets = summary.deletedAssets.filter((a) => remaining.has(a.id));
+        setSummary({ ...summary, deletedAssets, deleted: deletedAssets.length });
+        Alert.alert(
+          'Some items were not deleted',
+          `Deleted ${result.deletedIds.length} of ${total} item(s). ${result.remainingIds.length} could not be deleted and are still in your library. They remain staged so you can try again.`
+        );
+        return;
+      }
+
+      Alert.alert('Delete failed', 'Nothing was deleted. Your photos are still in your library. Please try again.');
+    } finally {
+      commitInFlight.current = false;
+      setDeleting(false);
+    }
+  }, [bumpStats, onDone, removeBookmark, setSummary, stagedIds, summary, syncProgress]);
 
   const onPressCommit = useCallback(() => {
     if (!summary) return;
@@ -104,21 +188,14 @@ export default function SummaryScreen() {
         `Remove ${summary.deletedAssets.length} item(s) from "${summary.commit.albumTitle}"? They will stay in your photo library.`,
         [
           { text: 'Cancel', style: 'cancel' },
-          { text: 'Remove', onPress: doCommit },
+          { text: 'Remove', onPress: doRemoveFromAlbum },
         ]
       );
       return;
     }
 
-    Alert.alert(
-      'Confirm deletion',
-      `Delete ${summary.deletedAssets.length} item(s) from your photo library? This can't be undone here.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: doCommit },
-      ]
-    );
-  }, [doCommit, summary]);
+    onPressDelete();
+  }, [doRemoveFromAlbum, onPressDelete, summary]);
 
   if (!summary) {
     return (

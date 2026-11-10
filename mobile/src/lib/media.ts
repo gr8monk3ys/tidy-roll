@@ -55,3 +55,9 @@ export async function getAssetFileSize(assetId: string): Promise<number | null> 
   const size = new File(info.localUri).size;
   return size > 0 ? size : null;
 }
+
+/** Whether the asset is still in the photo library. */
+export async function assetExists(assetId: string): Promise<boolean> {
+  const info = await MediaLibrary.getAssetInfoAsync(assetId, { shouldDownloadFromNetwork: false });
+  return info != null;
+}
