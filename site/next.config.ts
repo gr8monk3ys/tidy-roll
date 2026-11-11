@@ -2,6 +2,7 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  experimental: { inlineCss: true },
   async redirects() {
     // The legal pages originally shipped as static .html files and those URLs
     // are referenced by the app store listing drafts, so keep them working.
