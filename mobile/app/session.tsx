@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   Linking,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -22,6 +23,8 @@ import { useAppStore, type BookmarkAsset, type SessionMode } from '@/src/store/a
 import { SwipeCard } from '@/src/components/SwipeCard';
 import { useSessionStore, type SessionAsset, type SessionSummary } from '@/src/store/sessionStore';
 import { ShareError, shareAssetById } from '@/src/lib/share';
+import { stageAsset, unstageAsset } from '@/src/lib/deleteFlow';
+import { pagingCursor, startingProgress } from '@/src/lib/progress';
 
 type Mode =
   | { mode: 'month'; monthKey: MonthKey; restart: boolean }
@@ -134,12 +137,15 @@ function parseMode(params: Record<string, string | string[] | undefined>): Mode 
 export default function SessionScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const parsed = useMemo(() => parseMode(params), [params]);
+  // useLocalSearchParams returns a new object on every render. Key the parsed
+  // mode on its contents, otherwise every render reloads the deck and clears
+  // the staged deletes.
+  const paramsKey = JSON.stringify(params);
+  const parsed = useMemo(() => parseMode(JSON.parse(paramsKey)), [paramsKey]);
 
   const sessionId = useRef(makeId()).current;
 
   const settings = useAppStore((s) => s.settings);
-  const bookmarks = useAppStore((s) => s.bookmarks);
   const addBookmark = useAppStore((s) => s.addBookmark);
   const bumpStats = useAppStore((s) => s.bumpStats);
   const setScopeProgress = useAppStore((s) => s.setScopeProgress);
@@ -165,11 +171,9 @@ export default function SessionScreen() {
   const albumTitle = parsed.mode === 'album' ? parsed.albumTitle : undefined;
 
   const initialProgress = useMemo(() => {
-    const p = useAppStore.getState().progressByScope[scopeKey];
-    const cursor = parsed.mode === 'month' && restart ? 0 : p?.cursor ?? 0;
-    const after = parsed.mode === 'month' && restart ? undefined : p?.after;
-    return { cursor, after };
-  }, [parsed.mode, restart, scopeKey]);
+    // A finished scope starts over; resuming it would open on an empty deck.
+    return startingProgress(useAppStore.getState().progressByScope[scopeKey], restart);
+  }, [restart, scopeKey]);
   const [baseCursor, setBaseCursor] = useState<number>(initialProgress.cursor);
   const [baseAfter, setBaseAfter] = useState<string | undefined>(initialProgress.after);
 
@@ -190,6 +194,8 @@ export default function SessionScreen() {
     { decision: 'keep' | 'bookmark' | 'delete'; asset: MediaLibrary.Asset; prevAfter?: string }[]
   >([]);
   const afterRef = useRef<string | undefined>(baseAfter);
+  // Asset whose decision is being recorded; a second tap/swipe on it is ignored.
+  const decidingIdRef = useRef<string | null>(null);
 
   const [metadataOpen, setMetadataOpen] = useState(false);
   const [assetInfo, setAssetInfo] = useState<MediaLibrary.AssetInfo | null>(null);
@@ -218,7 +224,7 @@ export default function SessionScreen() {
       title,
       params:
         parsed.mode === 'month'
-          ? { monthKey: parsed.monthKey, restart: parsed.restart ? '1' : '0' }
+          ? { monthKey: parsed.monthKey, restart: '0' } // "Resume" must never restart the month
           : parsed.mode === 'day'
             ? { month: String(parsed.month), day: String(parsed.day) }
             : parsed.mode === 'album'
@@ -295,8 +301,10 @@ export default function SessionScreen() {
       }
 
       if (parsed.mode === 'bookmarks') {
-        // Build from persisted bookmark list.
-        const deck: MediaLibrary.Asset[] = bookmarks.map((b) => ({
+        // Build from persisted bookmark list. Read once, not subscribed: a
+        // subscription would rerun this loader (and wipe the staged deletes)
+        // every time a photo is bookmarked mid-session.
+        const deck: MediaLibrary.Asset[] = useAppStore.getState().bookmarks.map((b) => ({
           id: b.id,
           uri: b.uri,
           filename: b.filename,
@@ -367,19 +375,36 @@ export default function SessionScreen() {
       }
 
       // paged modes
-      const page = await fetchPage(baseAfter);
+      let startCursor = baseCursor;
+      let startAfter = baseAfter;
+      let page = await fetchPage(startAfter).catch(() => null);
+      if (startAfter !== undefined && (!page || (page.assets.length === 0 && page.totalCount > startCursor))) {
+        // The saved cursor no longer resolves (e.g. that photo was deleted
+        // outside the app). Start the scope over rather than dead-ending.
+        startCursor = 0;
+        startAfter = undefined;
+        setBaseCursor(0);
+        setBaseAfter(undefined);
+        page = await fetchPage(undefined);
+      }
+      if (!page) {
+        setAssets([]);
+        setTotalCount(0);
+        setHasNextPage(false);
+        return;
+      }
       setAssets(page.assets);
       setTotalCount(page.totalCount);
       setHasNextPage(page.hasNextPage);
       setEndCursor(page.endCursor ?? undefined);
-      afterRef.current = baseAfter;
+      afterRef.current = startAfter;
 
-      const completed = baseCursor >= page.totalCount && page.totalCount > 0;
-      updateProgress(baseCursor, baseAfter, completed);
+      const completed = startCursor >= page.totalCount && page.totalCount > 0;
+      updateProgress(startCursor, startAfter, completed);
     } finally {
       setLoading(false);
     }
-  }, [baseAfter, baseCursor, bookmarks, fetchPage, mediaTypes, parsed, updateProgress]);
+  }, [baseAfter, baseCursor, fetchPage, mediaTypes, parsed, updateProgress]);
 
   useEffect(() => {
     loadInitial();
@@ -388,6 +413,7 @@ export default function SessionScreen() {
     setBookmarkedCount(0);
     setDeletedAssets([]);
     historyRef.current = [];
+    decidingIdRef.current = null;
     setMetadataOpen(false);
     setAssetInfo(null);
   }, [loadInitial]);
@@ -414,7 +440,11 @@ export default function SessionScreen() {
     if (index >= assets.length - 10 && hasNextPage) loadMore();
   }, [assets.length, hasNextPage, index, loadMore, loading, loadingMore, parsed.mode]);
 
-  const finishSession = useCallback(() => {
+  const finishSession = useCallback((completed: boolean = true) => {
+    const paged = parsed.mode === 'month' || parsed.mode === 'recents' || parsed.mode === 'album';
+    // Where to resume if the staged assets get deleted: the last reviewed
+    // asset that is staying, or wherever this session started.
+    const lastStaying = [...historyRef.current].reverse().find((h) => h.decision !== 'delete');
     const commit =
       parsed.mode === 'album' && albumAction === 'remove' && albumId && albumTitle
         ? { type: 'removeFromAlbum' as const, albumId, albumTitle }
@@ -430,14 +460,11 @@ export default function SessionScreen() {
       deleted: deletedAssets.length,
       deletedAssets: deletedAssets.map(assetToSessionAsset),
       commit,
+      resumeAfter: paged ? (lastStaying ? lastStaying.asset.id : baseAfter) : undefined,
     };
     setSummary(summary);
-    updateProgress(
-      reviewedCount,
-      parsed.mode === 'month' || parsed.mode === 'recents' || parsed.mode === 'album' ? afterRef.current : undefined,
-      true
-    );
-    if (parsed.mode === 'day' && reviewedCount > 0) {
+    updateProgress(reviewedCount, paged ? afterRef.current : undefined, completed);
+    if (completed && parsed.mode === 'day' && reviewedCount > 0) {
       markOnThisDayCompleted(Date.now());
     }
     router.replace({ pathname: '/summary', params: { sessionId } });
@@ -448,6 +475,7 @@ export default function SessionScreen() {
     albumAction,
     albumId,
     albumTitle,
+    baseAfter,
     markOnThisDayCompleted,
     parsed.mode,
     reviewedCount,
@@ -463,7 +491,7 @@ export default function SessionScreen() {
     if (loading) return;
     if (totalCount === 0) return;
     if (reviewedCount >= totalCount) {
-      finishSession();
+      finishSession(true);
     }
   }, [finishSession, loading, reviewedCount, totalCount]);
 
@@ -494,6 +522,10 @@ export default function SessionScreen() {
     async (decision: 'keep' | 'bookmark' | 'delete') => {
       const a = currentAsset;
       if (!a) return;
+      // The card stays on screen until the index advances below; without this
+      // a fast second tap/swipe would record the same photo twice.
+      if (decidingIdRef.current === a.id) return;
+      decidingIdRef.current = a.id;
 
       historyRef.current.push({ decision, asset: a, prevAfter: afterRef.current });
 
@@ -507,7 +539,7 @@ export default function SessionScreen() {
         bumpStats({ reviewed: 1, bookmarked: 1 });
         await triggerHaptics('success');
       } else {
-        setDeletedAssets((prev) => [a, ...prev]);
+        setDeletedAssets((prev) => stageAsset(prev, a));
         bumpStats({ reviewed: 1 });
         await triggerHaptics('warning');
       }
@@ -518,7 +550,9 @@ export default function SessionScreen() {
       const nextReviewed = (parsed.mode === 'month' || parsed.mode === 'recents' || parsed.mode === 'album')
         ? baseCursor + nextIndex
         : nextIndex;
-      const nextAfter = (parsed.mode === 'month' || parsed.mode === 'recents' || parsed.mode === 'album') ? a.id : undefined;
+      const nextAfter = (parsed.mode === 'month' || parsed.mode === 'recents' || parsed.mode === 'album')
+        ? pagingCursor(Platform.OS, nextReviewed, a.id)
+        : undefined;
       updateProgress(nextReviewed, nextAfter, totalCount > 0 && nextReviewed >= totalCount);
     },
     [
@@ -537,6 +571,7 @@ export default function SessionScreen() {
   const undo = useCallback(() => {
     const last = historyRef.current.pop();
     if (!last) return;
+    decidingIdRef.current = null;
 
     setIndex((i) => Math.max(0, i - 1));
 
@@ -547,7 +582,7 @@ export default function SessionScreen() {
       setBookmarkedCount((x) => Math.max(0, x - 1));
       bumpStats({ reviewed: -1, bookmarked: -1 });
     } else {
-      setDeletedAssets((prev) => prev.filter((x) => x.id !== last.asset.id));
+      setDeletedAssets((prev) => unstageAsset(prev, last.asset.id));
       bumpStats({ reviewed: -1 });
     }
 
@@ -592,8 +627,11 @@ export default function SessionScreen() {
 
   const header = (
     <View style={styles.header}>
-      <Pressable onPress={() => router.back()} style={styles.headerPill}>
-        <Text style={styles.headerPillText}>Back</Text>
+      {/* Leaving with staged deletes goes to the summary so they can be confirmed, not silently dropped. */}
+      <Pressable
+        onPress={() => (deletedAssets.length > 0 ? finishSession(false) : router.back())}
+        style={styles.headerPill}>
+        <Text style={styles.headerPillText}>{deletedAssets.length > 0 ? 'Finish' : 'Back'}</Text>
       </Pressable>
 
       <View style={styles.headerCenter}>
@@ -666,6 +704,7 @@ export default function SessionScreen() {
           </View>
         ) : currentAsset ? (
           <SwipeCard
+            key={currentAsset.id}
             uri={currentAsset.uri}
             onSwipeLeft={() => decide('delete')}
             onSwipeRight={() => decide('keep')}
