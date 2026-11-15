@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   AnimatePresence,
-  motion,
+  m,
+  LazyMotion,
   useMotionValue,
   useTransform,
   animate,
@@ -28,7 +29,7 @@ const FLY_X = 640;
 function Stamp({ kind, opacity }: { kind: Decision; opacity?: import('framer-motion').MotionValue<number> | number }) {
   const isKeep = kind === 'keep';
   return (
-    <motion.div
+    <m.div
       style={{ opacity }}
       className={`pointer-events-none absolute top-5 rounded-xl border-[3.5px] px-3.5 py-1.5 text-2xl font-extrabold tracking-[0.12em] ${
         isKeep
@@ -37,7 +38,7 @@ function Stamp({ kind, opacity }: { kind: Decision; opacity?: import('framer-mot
       }`}
     >
       {isKeep ? 'KEEP' : 'TOSS'}
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -95,7 +96,7 @@ function TopCard({
   }, [flyTo, fly]);
 
   return (
-    <motion.article
+    <m.article
       className="absolute inset-0 z-30 flex cursor-grab flex-col overflow-hidden rounded-[20px] border border-line bg-surface shadow-[0_18px_50px_rgba(0,0,0,0.45)] active:cursor-grabbing"
       style={{ x, y, rotate }}
       drag
@@ -110,7 +111,7 @@ function TopCard({
       <CardFace card={card} />
       <Stamp kind="keep" opacity={keepOpacity} />
       <Stamp kind="toss" opacity={tossOpacity} />
-    </motion.article>
+    </m.article>
   );
 }
 
@@ -170,7 +171,7 @@ export default function DemoDeck() {
         aria-label="Interactive demo — drag the card left or right"
       >
         {queue.length === 0 ? (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
             className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-[20px] border border-dashed border-line p-6 text-center"
@@ -185,7 +186,7 @@ export default function DemoDeck() {
             >
               Get Tidy Roll
             </a>
-          </motion.div>
+          </m.div>
         ) : (
           <>
             {queue.slice(1, 3).map((card, index) => (
