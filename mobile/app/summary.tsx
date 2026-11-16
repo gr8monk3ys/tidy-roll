@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import * as MediaLibrary from 'expo-media-library';
+import * as StoreReview from 'expo-store-review';
 
 import { theme } from '@/src/theme';
 import { useSessionStore } from '@/src/store/sessionStore';
@@ -154,6 +155,8 @@ export default function SummaryScreen() {
 
       if (result.status === 'deleted') {
         Alert.alert('Deleted', `Deleted ${result.deletedIds.length} item(s).`);
+        // Ask right after a successful cleanup; the OS rate-limits how often the prompt actually shows.
+        void StoreReview.hasAction().then((can) => (can ? StoreReview.requestReview() : undefined));
         onDone();
         return;
       }
