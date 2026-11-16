@@ -7,7 +7,7 @@ TidyRoll
 Swipe your camera roll clean
 
 ## Keywords (max 100 chars)
-photos,cleanup,delete,organize,albums,storage,declutter,memories
+photos,cleanup,delete,organize,albums,storage,declutter,memories,cleaner,gallery,space,pictures
 
 ## Promotional Text (optional)
 Clean up your camera roll one swipe at a time. Batch delete with confidence, or bookmark for later.
