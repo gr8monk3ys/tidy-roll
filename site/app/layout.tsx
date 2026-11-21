@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 // The custom domain is the canonical host. The vercel.app address still serves the
 // site (store listings link to it), but search engines should index this one.
-const SITE_URL = 'https://tidyroll-legal.vivancedata.com';
+const SITE_URL = 'https://tidyroll-legal.lscaturchio.xyz';
 const TITLE = 'Tidy Roll — Swipe your camera roll clean';
 const DESCRIPTION =
   'A Tinder-style swipe deck for cleaning up your photos. Right to keep, left to toss — fast, fun, and 100% on your device. Free Android and iOS app, no ads, no tracking.';
