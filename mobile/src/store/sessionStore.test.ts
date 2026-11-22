@@ -32,8 +32,8 @@ describe('setSummary', () => {
     useSessionStore.getState().setSummary(makeSummary('s2'));
     const { summaries } = useSessionStore.getState();
     expect(Object.keys(summaries).sort()).toEqual(['s1', 's2']);
-    expect(summaries.s1.sessionId).toBe('s1');
-    expect(summaries.s2.sessionId).toBe('s2');
+    expect(summaries.s1?.sessionId).toBe('s1');
+    expect(summaries.s2?.sessionId).toBe('s2');
   });
 
   it('replaces (not merges) an existing summary for the same sessionId', () => {
@@ -61,12 +61,12 @@ describe('setSummary', () => {
       deletedAssets: [asset],
     });
     useSessionStore.getState().setSummary(summary);
-    expect(useSessionStore.getState().summaries.s1.commit).toEqual({
+    expect(useSessionStore.getState().summaries.s1?.commit).toEqual({
       type: 'removeFromAlbum',
       albumId: 'alb1',
       albumTitle: 'Vacation',
     });
-    expect(useSessionStore.getState().summaries.s1.deletedAssets).toEqual([asset]);
+    expect(useSessionStore.getState().summaries.s1?.deletedAssets).toEqual([asset]);
   });
 });
 

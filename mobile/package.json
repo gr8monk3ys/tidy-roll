@@ -9,7 +9,9 @@
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "depcruise": "depcruise app src components --config",
+    "check": "npm run lint && npm run typecheck && npm run depcruise && npm test"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -44,7 +46,9 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
+    "@total-typescript/shoehorn": "^0.1.2",
     "@types/react": "~19.1.0",
+    "dependency-cruiser": "^18.8.0",
     "eslint": "^9.39.2",
     "eslint-config-expo": "^10.0.0",
     "react-test-renderer": "19.1.0",

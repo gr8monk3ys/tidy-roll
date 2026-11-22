@@ -124,6 +124,7 @@ export default function DemoDeck() {
     .filter((entry) => entry.decision === 'toss')
     .reduce((sum, entry) => sum + entry.card.mb, 0);
   const reviewed = CARDS.length - queue.length;
+  const topCard = queue[0];
 
   const handleDecide = useCallback((decision: Decision) => {
     setQueue((current) => {
@@ -170,7 +171,7 @@ export default function DemoDeck() {
         className="relative h-[min(96vw,410px)] w-[min(78vw,330px)] touch-none"
         aria-label="Interactive demo — drag the card left or right"
       >
-        {queue.length === 0 ? (
+        {topCard === undefined ? (
           <m.div
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -203,8 +204,8 @@ export default function DemoDeck() {
             ))}
             <AnimatePresence>
               <TopCard
-                key={queue[0].name}
-                card={queue[0]}
+                key={topCard.name}
+                card={topCard}
                 onDecide={handleDecide}
                 flyTo={flyTo}
               />

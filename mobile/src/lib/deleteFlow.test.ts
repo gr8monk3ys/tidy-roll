@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { fromAny } from '@total-typescript/shoehorn';
 import { commitStagedDeletes, confirmAndCommit, stageAsset, unstageAsset, type DeleteGateway } from './deleteFlow';
 
 /** An in-memory photo library whose delete can be made to fail part-way. */
@@ -92,7 +93,7 @@ describe('confirmAndCommit', () => {
 
   it('only an explicit true counts as confirmation', async () => {
     const { gateway, deleteAssets } = makeLibrary(['a']);
-    const result = await confirmAndCommit(['a'], async () => 'yes' as unknown as boolean, gateway);
+    const result = await confirmAndCommit(['a'], async () => fromAny('yes'), gateway);
     expect(result.status).toBe('cancelled');
     expect(deleteAssets).not.toHaveBeenCalled();
   });
