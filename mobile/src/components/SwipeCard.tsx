@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Animated, Dimensions, PanResponder, StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
 
@@ -18,6 +18,23 @@ type Props = {
 const SWIPE_THRESHOLD = 110;
 const LONG_PRESS_MS = 420;
 
+function createLongPressTimer() {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+  const clear = () => {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+  };
+  const start = (fn: () => void, ms: number) => {
+    timeout = setTimeout(() => {
+      timeout = null;
+      fn();
+    }, ms);
+  };
+  return { clear, start };
+}
+
 export function SwipeCard({
   uri,
   onSwipeLeft,
@@ -28,8 +45,7 @@ export function SwipeCard({
   leftColor = theme.colors.red,
   rightColor = theme.colors.green,
 }: Props) {
-  const position = useRef(new Animated.ValueXY()).current;
-  const longPressTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [position] = useState(() => new Animated.ValueXY());
 
   const { width: screenWidth } = Dimensions.get('window');
 
@@ -63,33 +79,23 @@ export function SwipeCard({
     [position.x]
   );
 
-  const clearLongPress = () => {
-    if (longPressTimeout.current) {
-      clearTimeout(longPressTimeout.current);
-      longPressTimeout.current = null;
-    }
-  };
-
-  const panResponder = useMemo(
-    () =>
-      PanResponder.create({
+  const panResponder = useMemo(() => {
+    const longPress = createLongPressTimer();
+    return PanResponder.create({
         onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: () => true,
         onPanResponderGrant: () => {
-          clearLongPress();
+          longPress.clear();
           if (onLongPress) {
-            longPressTimeout.current = setTimeout(() => {
-              longPressTimeout.current = null;
-              onLongPress();
-            }, LONG_PRESS_MS);
+            longPress.start(onLongPress, LONG_PRESS_MS);
           }
         },
         onPanResponderMove: (_, gesture) => {
-          if (Math.abs(gesture.dx) > 8 || Math.abs(gesture.dy) > 8) clearLongPress();
+          if (Math.abs(gesture.dx) > 8 || Math.abs(gesture.dy) > 8) longPress.clear();
           position.setValue({ x: gesture.dx, y: gesture.dy });
         },
         onPanResponderRelease: (_, gesture) => {
-          clearLongPress();
+          longPress.clear();
 
           if (gesture.dx > SWIPE_THRESHOLD) {
             Animated.timing(position, {
@@ -123,7 +129,7 @@ export function SwipeCard({
           }).start();
         },
         onPanResponderTerminate: () => {
-          clearLongPress();
+          longPress.clear();
           Animated.spring(position, {
             toValue: { x: 0, y: 0 },
             useNativeDriver: true,
@@ -131,9 +137,8 @@ export function SwipeCard({
             tension: 60,
           }).start();
         },
-      }),
-    [onLongPress, onSwipeLeft, onSwipeRight, position, screenWidth]
-  );
+    });
+  }, [onLongPress, onSwipeLeft, onSwipeRight, position, screenWidth]);
 
   return (
     <Animated.View

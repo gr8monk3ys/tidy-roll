@@ -1,5 +1,5 @@
 import { File } from 'expo-file-system';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 
 export type MediaPermission = {
   status: MediaLibrary.PermissionStatus;

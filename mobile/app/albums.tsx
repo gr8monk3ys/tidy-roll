@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 
 import { theme } from '@/src/theme';
 import { getMediaPermission, requestMediaPermission, type MediaPermission } from '@/src/lib/media';
@@ -12,10 +12,9 @@ export default function AlbumsScreen() {
 
   const [perm, setPerm] = useState<MediaPermission | null>(null);
   const [albums, setAlbums] = useState<MediaLibrary.Album[] | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
-    setLoading(true);
     try {
       const p = await getMediaPermission();
       setPerm(p);
@@ -59,7 +58,10 @@ export default function AlbumsScreen() {
           onPress={async () => {
             const next = await requestMediaPermission();
             setPerm(next);
-            if (next.granted) load();
+            if (next.granted) {
+              setLoading(true);
+              load();
+            }
           }}>
           <Text style={styles.primaryButtonText}>Allow Photos Access</Text>
         </Pressable>

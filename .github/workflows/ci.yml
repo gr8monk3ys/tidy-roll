@@ -34,7 +34,7 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
       - name: Module boundaries
-        run: npm run depcruise
+        run: npm run deps
       - name: Unit tests
         run: npm test
 

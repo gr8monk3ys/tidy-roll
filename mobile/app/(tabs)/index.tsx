@@ -11,9 +11,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
-import * as MediaLibrary from 'expo-media-library';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { theme } from '@/src/theme';
@@ -27,6 +26,8 @@ import {
 } from '@/src/lib/media';
 import { useAppStore } from '@/src/store/appStore';
 
+const MONTHS_PAGE = 18;
+
 function scopeKeyForMonth(monthKey: MonthKey) {
   return `month:${monthKey}`;
 }
@@ -37,8 +38,7 @@ export default function HomeScreen() {
 
   const [perm, setPerm] = useState<MediaPermission | null>(null);
   const [oldestAssetDate, setOldestAssetDate] = useState<Date | null>(null);
-  const [allMonths, setAllMonths] = useState<MonthKey[]>([]);
-  const [visibleMonths, setVisibleMonths] = useState<MonthKey[]>([]);
+  const [visibleCount, setVisibleCount] = useState(MONTHS_PAGE);
   const [monthTotals, setMonthTotals] = useState<Record<string, number>>({});
   const [loadingTotals, setLoadingTotals] = useState<Record<string, boolean>>({});
 
@@ -50,8 +50,14 @@ export default function HomeScreen() {
   }, []);
 
   useEffect(() => {
-    refreshPerm();
-  }, [refreshPerm]);
+    let cancelled = false;
+    getMediaPermission().then((p) => {
+      if (!cancelled) setPerm(p);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -72,9 +78,8 @@ export default function HomeScreen() {
     };
   }, [perm?.granted]);
 
-  useEffect(() => {
-    if (!oldestAssetDate) return;
-
+  const allMonths = useMemo(() => {
+    if (!oldestAssetDate) return [];
     const startMonth = new Date(oldestAssetDate.getFullYear(), oldestAssetDate.getMonth(), 1);
     const now = new Date();
     const endMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -87,10 +92,9 @@ export default function HomeScreen() {
     ) {
       months.push(monthKeyFromDate(cursor));
     }
-
-    setAllMonths(months);
-    setVisibleMonths(months.slice(0, 18));
+    return months;
   }, [oldestAssetDate]);
+  const visibleMonths = useMemo(() => allMonths.slice(0, visibleCount), [allMonths, visibleCount]);
 
   const mediaTypes = useMemo(
     () => (settings.includeVideos ? [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video] : [MediaLibrary.MediaType.photo]),
@@ -304,7 +308,7 @@ export default function HomeScreen() {
           <Text style={styles.sectionTitle}>Month-by-month</Text>
           {allMonths.length > visibleMonths.length ? (
             <Pressable
-              onPress={() => setVisibleMonths(allMonths.slice(0, visibleMonths.length + 18))}
+              onPress={() => setVisibleCount((n) => n + MONTHS_PAGE)}
               style={styles.morePill}>
               <Text style={styles.morePillText}>Load more</Text>
             </Pressable>

@@ -3,7 +3,7 @@ import { Alert, ActivityIndicator, FlatList, Platform, Pressable, StyleSheet, Te
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import * as StoreReview from 'expo-store-review';
 
 import { theme } from '@/src/theme';
@@ -51,10 +51,10 @@ export default function SummaryScreen() {
   const [sizeTotal, setSizeTotal] = useState<SizeTotal | null>(null);
   const sizePromise = useRef<Promise<SizeTotal> | null>(null);
   const sizeById = useRef(new Map<string, number>());
+  const shownSizeTotal = isRemoveFromAlbum || stagedIds.length === 0 ? null : sizeTotal;
   useEffect(() => {
     if (isRemoveFromAlbum || stagedIds.length === 0) {
       sizePromise.current = null;
-      setSizeTotal(null);
       return;
     }
     let cancelled = false;
@@ -246,12 +246,12 @@ export default function SummaryScreen() {
         {!isRemoveFromAlbum && summary.deletedAssets.length ? (
           <View style={styles.statRow}>
             <Text style={styles.statLabel}>Space to free</Text>
-            <Text style={styles.statValue}>{sizeTotal ? formatBytes(sizeTotal.bytes) : 'Measuring...'}</Text>
+            <Text style={styles.statValue}>{shownSizeTotal ? formatBytes(shownSizeTotal.bytes) : 'Measuring...'}</Text>
           </View>
         ) : null}
-        {sizeTotal && sizeTotal.unknown > 0 ? (
+        {shownSizeTotal && shownSizeTotal.unknown > 0 ? (
           <Text style={styles.textDim}>
-            {sizeTotal.unknown} item(s) couldn&apos;t be measured (e.g. stored only in iCloud) and aren&apos;t counted.
+            {shownSizeTotal.unknown} item(s) couldn&apos;t be measured (e.g. stored only in iCloud) and aren&apos;t counted.
           </Text>
         ) : null}
       </View>
