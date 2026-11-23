@@ -6,14 +6,20 @@ export function monthKeyFromDate(d: Date): MonthKey {
   return format(d, 'yyyy-MM') as MonthKey;
 }
 
+function parseMonthKey(monthKey: MonthKey): [year: number, month: number] {
+  const [y, m] = monthKey.split('-').map(Number);
+  if (y === undefined || m === undefined) throw new Error(`Invalid month key: ${monthKey}`);
+  return [y, m];
+}
+
 export function formatMonthLabel(monthKey: MonthKey): string {
-  const [y, m] = monthKey.split('-').map((x) => Number(x));
+  const [y, m] = parseMonthKey(monthKey);
   const date = new Date(y, m - 1, 1);
   return format(date, 'MMM yyyy');
 }
 
 export function monthBounds(monthKey: MonthKey): { start: Date; end: Date } {
-  const [y, m] = monthKey.split('-').map((x) => Number(x));
+  const [y, m] = parseMonthKey(monthKey);
   const start = new Date(y, m - 1, 1, 0, 0, 0, 0);
   const end = new Date(y, m, 1, 0, 0, 0, 0); // exclusive end
   return { start, end };
