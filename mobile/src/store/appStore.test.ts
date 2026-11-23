@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { fromPartial } from '@total-typescript/shoehorn';
 import { useAppStore, type AppStats, type BookmarkAsset } from './appStore';
 
 // The store persists to AsyncStorage, whose native implementation assumes a
@@ -164,7 +165,7 @@ describe('bumpStats', () => {
 
   it('treats bytesReclaimed missing from stats persisted before it existed as 0', () => {
     const { bytesReclaimed: _omit, ...legacy } = DEFAULT_STATS;
-    useAppStore.setState({ stats: legacy as AppStats });
+    useAppStore.setState({ stats: fromPartial<AppStats>(legacy) });
     useAppStore.getState().bumpStats({ bytesReclaimed: 1024 });
     expect(useAppStore.getState().stats.bytesReclaimed).toBe(1024);
   });
