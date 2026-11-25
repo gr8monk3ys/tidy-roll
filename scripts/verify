@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Fast gate that Claude Code runs before a session can finish: `npm run check`
+# minus the site's Next.js build (and the store zip / e2e CI also runs).
+# No browser or deploy needed. The full check before a PR is still `npm run check`.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+npm test
+
+(
+  cd mobile
+  npm ci
+  npm run lint
+  npm run typecheck
+  npm run depcruise
+  npm test
+)
+
+(
+  cd site
+  npm ci
+  npm run typecheck
+)
