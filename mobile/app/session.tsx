@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import * as Haptics from 'expo-haptics';
 import { Image as ExpoImage } from 'expo-image';
 
@@ -135,13 +135,17 @@ function parseMode(params: Record<string, string | string[] | undefined>): Mode 
 }
 
 export default function SessionScreen() {
-  const router = useRouter();
   const params = useLocalSearchParams();
-  // useLocalSearchParams returns a new object on every render. Key the parsed
-  // mode on its contents, otherwise every render reloads the deck and clears
-  // the staged deletes.
+  // useLocalSearchParams returns a new object on every render. Key the session
+  // on the parsed params' contents, otherwise every render reloads the deck and
+  // clears the staged deletes. A new key remounts with fresh state.
   const paramsKey = JSON.stringify(params);
   const parsed = useMemo(() => parseMode(JSON.parse(paramsKey)), [paramsKey]);
+  return <SessionBody key={JSON.stringify(parsed)} parsed={parsed} />;
+}
+
+function SessionBody({ parsed }: { parsed: Mode }) {
+  const router = useRouter();
 
   const sessionId = useRef(makeId()).current;
 
@@ -179,9 +183,11 @@ export default function SessionScreen() {
 
   const [perm, setPerm] = useState<MediaPermission | null>(null);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const loadingMore = useRef(false);
   const [assets, setAssets] = useState<MediaLibrary.Asset[]>([]);
-  const [index, setIndex] = useState<number>(0);
+  const [index, setIndex] = useState<number>(() =>
+    parsed.mode === 'day' || parsed.mode === 'bookmarks' ? initialProgress.cursor : 0
+  );
   const [totalCount, setTotalCount] = useState<number>(0);
   const [endCursor, setEndCursor] = useState<string | undefined>(undefined);
   const [hasNextPage, setHasNextPage] = useState<boolean>(false);
@@ -190,6 +196,7 @@ export default function SessionScreen() {
   const [bookmarkedCount, setBookmarkedCount] = useState(0);
   const [deletedAssets, setDeletedAssets] = useState<MediaLibrary.Asset[]>([]);
 
+  const [canUndo, setCanUndo] = useState(false);
   const historyRef = useRef<
     { decision: 'keep' | 'bookmark' | 'delete'; asset: MediaLibrary.Asset; prevAfter?: string }[]
   >([]);
@@ -211,14 +218,6 @@ export default function SessionScreen() {
   }, [baseCursor, index, parsed.mode]);
 
   useEffect(() => {
-    // Capture progress at session start; do not react to later progress updates.
-    setBaseCursor(initialProgress.cursor);
-    setBaseAfter(initialProgress.after);
-    afterRef.current = initialProgress.after;
-    setIndex(parsed.mode === 'day' || parsed.mode === 'bookmarks' ? initialProgress.cursor : 0);
-  }, [initialProgress.after, initialProgress.cursor, parsed.mode]);
-
-  useEffect(() => {
     setLastSession({
       mode: parsed.mode as SessionMode,
       title,
@@ -234,13 +233,15 @@ export default function SessionScreen() {
     });
   }, [parsed, setLastSession, title]);
 
-  const refreshPerm = useCallback(async () => {
-    setPerm(await getMediaPermission());
-  }, []);
-
   useEffect(() => {
-    refreshPerm();
-  }, [refreshPerm]);
+    let cancelled = false;
+    getMediaPermission().then((p) => {
+      if (!cancelled) setPerm(p);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const updateProgress = useCallback(
     (nextReviewedCount: number, nextAfter?: string, completed?: boolean) => {
@@ -289,7 +290,6 @@ export default function SessionScreen() {
   );
 
   const loadInitial = useCallback(async () => {
-    setLoading(true);
     try {
       const p = await getMediaPermission();
       setPerm(p);
@@ -408,37 +408,29 @@ export default function SessionScreen() {
 
   useEffect(() => {
     loadInitial();
-    // Reset decision state when mode changes.
-    setKept(0);
-    setBookmarkedCount(0);
-    setDeletedAssets([]);
-    historyRef.current = [];
-    decidingIdRef.current = null;
-    setMetadataOpen(false);
-    setAssetInfo(null);
   }, [loadInitial]);
 
   const loadMore = useCallback(async () => {
-    if (loadingMore || loading) return;
+    if (loadingMore.current || loading) return;
     if (!(parsed.mode === 'month' || parsed.mode === 'recents' || parsed.mode === 'album')) return;
     if (!hasNextPage) return;
 
-    setLoadingMore(true);
+    loadingMore.current = true;
     try {
       const page = await fetchPage(endCursor);
       setAssets((prev) => [...prev, ...page.assets]);
       setHasNextPage(page.hasNextPage);
       setEndCursor(page.endCursor ?? endCursor);
     } finally {
-      setLoadingMore(false);
+      loadingMore.current = false;
     }
-  }, [endCursor, fetchPage, hasNextPage, loading, loadingMore, parsed.mode]);
+  }, [endCursor, fetchPage, hasNextPage, loading, parsed.mode]);
 
   useEffect(() => {
     if (!(parsed.mode === 'month' || parsed.mode === 'recents' || parsed.mode === 'album')) return;
-    if (loading || loadingMore) return;
+    if (loading) return;
     if (index >= assets.length - 10 && hasNextPage) loadMore();
-  }, [assets.length, hasNextPage, index, loadMore, loading, loadingMore, parsed.mode]);
+  }, [assets.length, hasNextPage, index, loadMore, loading, parsed.mode]);
 
   const finishSession = useCallback((completed: boolean = true) => {
     const paged = parsed.mode === 'month' || parsed.mode === 'recents' || parsed.mode === 'album';
@@ -528,6 +520,7 @@ export default function SessionScreen() {
       decidingIdRef.current = a.id;
 
       historyRef.current.push({ decision, asset: a, prevAfter: afterRef.current });
+      setCanUndo(true);
 
       if (decision === 'keep') {
         setKept((x) => x + 1);
@@ -571,6 +564,7 @@ export default function SessionScreen() {
   const undo = useCallback(() => {
     const last = historyRef.current.pop();
     if (!last) return;
+    setCanUndo(historyRef.current.length > 0);
     decidingIdRef.current = null;
 
     setIndex((i) => Math.max(0, i - 1));
@@ -647,7 +641,7 @@ export default function SessionScreen() {
         <Pressable onPress={openMetadata} style={styles.headerPill} disabled={!currentAsset}>
           <Text style={styles.headerPillText}>Info</Text>
         </Pressable>
-        <Pressable onPress={undo} style={styles.headerPill} disabled={historyRef.current.length === 0}>
+        <Pressable onPress={undo} style={styles.headerPill} disabled={!canUndo}>
           <Text style={styles.headerPillText}>Undo</Text>
         </Pressable>
       </View>

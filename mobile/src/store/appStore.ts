@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { format, subDays } from 'date-fns';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { MediaTypeValue } from 'expo-media-library';
+import type { MediaTypeValue } from 'expo-media-library/legacy';
 
 export type AppSettings = {
   includeVideos: boolean;

@@ -39,13 +39,15 @@ export default function StatsScreen() {
 
   const [perm, setPerm] = useState<MediaPermission | null>(null);
 
-  const refreshPerm = useCallback(async () => {
-    setPerm(await getMediaPermission());
-  }, []);
-
   useEffect(() => {
-    refreshPerm();
-  }, [refreshPerm]);
+    let cancelled = false;
+    getMediaPermission().then((p) => {
+      if (!cancelled) setPerm(p);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'left', 'right']}>
