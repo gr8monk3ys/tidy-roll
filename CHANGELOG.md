@@ -4,6 +4,20 @@ All notable changes to Tidy Roll are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [1.1.1](https://github.com/gr8monk3ys/tidy-roll/compare/v1.1.0...v1.1.1) (2026-11-28)
+
+
+### Bug Fixes
+
+* **deps:** bump site to next 16 and refresh mobile lockfile ([#75](https://github.com/gr8monk3ys/tidy-roll/issues/75)) ([5c73ffd](https://github.com/gr8monk3ys/tidy-roll/commit/5c73ffd285c0bc5b94be0ab637b3c9c5bb6e1cc3))
+* **mobile:** launch-readiness fixes for the staged-delete flow, with tests ([#65](https://github.com/gr8monk3ys/tidy-roll/issues/65)) ([58f7568](https://github.com/gr8monk3ys/tidy-roll/commit/58f75683d11feaa89f2f0e0eb2724e272a8b75aa))
+* **seo:** use the custom domain as the canonical host ([#66](https://github.com/gr8monk3ys/tidy-roll/issues/66)) ([dc140ca](https://github.com/gr8monk3ys/tidy-roll/commit/dc140ca0ad1ea6120d1b31438090e2b4e0f0df0d))
+
+
+### Performance Improvements
+
+* inline critical CSS and lazy-load framer-motion features ([#67](https://github.com/gr8monk3ys/tidy-roll/issues/67)) ([7637eae](https://github.com/gr8monk3ys/tidy-roll/commit/7637eaea1ad3bcfccfc11f2dc3c963c7139fe697))
+
 ## [1.1.0](https://github.com/gr8monk3ys/tidy-roll/compare/v1.0.0...v1.1.0) (2026-11-02)
 
 
